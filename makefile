@@ -2,8 +2,8 @@ CC = g++
 GCC = gcc
 FLAGS = -Wall -Werror
 LIBRARIES = -fopenmp
-Q2_TARGET = q2
-Q3_TARGET = q3
+Q2_TARGET = bh
+TEST_TARGET = tst
 
 ifeq ($(shell uname), Darwin)
 	CC = g++-4.8
@@ -17,38 +17,34 @@ VAR_DIR = $(SCRATCH)/var
 INPUTS = $(wildcard $(SRC_DIR)/*.cc)
 INPUTS_TMP = $(subst $(SRC_DIR),$(OBJ_DIR),$(INPUTS))
 OBJECTS = $(INPUTS_TMP:%.cc=%.o)
-Q2_OBJECTS = $(filter-out $(OBJ_DIR)/$(Q3_TARGET).o,$(OBJECTS))
-Q3_OBJECTS = $(filter-out $(OBJ_DIR)/$(Q2_TARGET).o,$(OBJECTS))
+Q2_OBJECTS = $(filter-out $(OBJ_DIR)/$(TEST_TARGET).o, $(OBJECTS))
+TEST_OBJECTS = $(filter-out $(OBJ_DIR)/$(Q2_TARGET).o, $(OBJECTS))
 DEPFILES = $(OBJECTS:%.o=%.d)
 
-PERF_FILES = $(VAR_DIR)/1d.txt $(VAR_DIR)/4d.txt
-PERF_SUBDIR = default
-RESULTS_DIR = results/$(PERF_SUBDIR)
+# ifeq ($(OMP_NUM_THREADS), 1)
+# 	PERF_SUBDIR = core
+# endif
 
-ifeq ($(OMP_NUM_THREADS), 1)
-	PERF_SUBDIR = core
-endif
+# ifeq ($(OMP_NUM_THREADS), 6)
+# 	PERF_SUBDIR = socket
+# endif
 
-ifeq ($(OMP_NUM_THREADS), 6)
-	PERF_SUBDIR = socket
-endif
-
-ifeq ($(OMP_NUM_THREADS), 12)
-	PERF_SUBDIR = node
-endif
+# ifeq ($(OMP_NUM_THREADS), 12)
+# 	PERF_SUBDIR = node
+# endif
 
 REPORT_HTML = report/report.html
 REPORT_SRC = report/report.md
 
 # main application
 
-all: $(Q2_TARGET) $(Q3_TARGET)
+all: $(Q2_TARGET) $(TEST_TARGET)
 
 $(Q2_TARGET): $(Q2_OBJECTS)
 	$(CC) $(FLAGS) $(LIBRARIES) -o $@ $(Q2_OBJECTS)
 
-$(Q3_TARGET):
-	$(GCC) -fopenmp -std=c11 -o search $(SRC_DIR)/q3.c
+$(TEST_TARGET): $(TEST_OBJECTS)
+	$(CC) $(FLAGS) $(LIBRARIES) -o $@ $(TEST_OBJECTS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc | $(OBJ_DIR)
 	$(CC) $(FLAGS) $(LIBRARIES) -c -o $@ $<
@@ -63,7 +59,7 @@ $(OBJ_DIR):
 # running, testing, etc
 
 test: all
-	@test/test
+	@./$(TEST_TARGET)
 
 $(VAR_DIR):
 	mkdir $@
