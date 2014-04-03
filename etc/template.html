@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>CSE 392 Homework 2</title>
+    <!-- <link rel="stylesheet" href="css/normalize.css"> -->
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" />
+    <style>
+      body {
+        color: #555;
+      }
+
+      code {
+        background-color: aliceblue;
+      }
+
+      pre code {
+        background-color: aliceblue;
+        display: inline-block;
+        border-radius: 4px;
+        padding: 10px;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+      }
+
+      .MathJax_Display {
+        color: black;
+      }
+
+      .markdown {
+        width: 968px;
+        margin: auto;
+      }
+
+      table td, table th {
+        border: 1px solid #ccc;
+        padding: 6px 13px;
+      }
+
+      table tr {
+        border-top: 1px solid #ccc;
+        background-color: #fff;
+      }
+
+      table tbody tr:nth-child(odd) {
+        background-color: #eee;
+      }
+
+      .chart {
+        float: left
+      }
+
+      .clearfix:before,
+      .clearfix:after {
+          content: " "; /* 1 */
+          display: table; /* 2 */
+      }
+
+      .clearfix:after {
+          clear: both;
+      }
+
+      .pseudocode {
+        white-space: pre-line;
+      }
+
+    </style>
+  </head>
+  <body>
+    <script type=x-markdown class=markdown-source>%(report)s</script>
+    <div class=markdown></div>
+
+    <script>%(marked)s</script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+    </script>
+    <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      var md = document.querySelector('.markdown');
+      var mdText = document.createElement('div');
+      mdText.innerHTML = document.querySelector('.markdown-source').innerHTML;
+      MathJax.Hub.Register.MessageHook('End Process', function (message) {
+        if (message[1] === mdText) {
+          md.innerHTML = marked(mdText.innerHTML, {sanitize: false});
+        }
+      });
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, mdText]);
+    </script>
+  </body>
+</html>

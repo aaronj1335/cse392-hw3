@@ -1,0 +1,7 @@
+FILES
+qtree			: class that implements the quadtree data structure
+morton_id	: class for morton id calculations
+nbody			: set of functions that implement Barnes-Hut using the qtree
+
+tt1				: test tree construction
+tt2				: test nbody calculation
