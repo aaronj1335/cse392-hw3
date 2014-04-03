@@ -2,7 +2,7 @@ CC = g++
 GCC = gcc
 FLAGS = -Wall -Werror
 LIBRARIES = -fopenmp
-Q2_TARGET = bh
+Q2_TARGET = nbody
 TEST_TARGET = tst
 
 ifeq ($(shell uname), Darwin)
