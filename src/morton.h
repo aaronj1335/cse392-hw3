@@ -31,6 +31,8 @@ typedef uint8_t lvl_t;
 // if we reserve 6 bits for the level, then we can actually use that to
 // indicate a level for which the remaining 58 bits of the morton ID can't
 // represent. so we'll use that invalid space to encode a "null" value
+//
+// ...also idk if this is actually useful
 #define NULL_MID ((midlvl_t) ((1 << LEVEL_BITS) - 1))
 
 lvl_t lvl(midlvl_t n);
