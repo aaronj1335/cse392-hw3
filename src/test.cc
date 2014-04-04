@@ -3,6 +3,7 @@
 #include <limits.h>
 
 #include "morton.h"
+#include "body.h"
 
 using namespace std;
 
@@ -180,6 +181,13 @@ int main(int argc, char* argv[]) {
   assert(leastCommonAncestor(1, 2) == 0);
   assert(leastCommonAncestor(2, 1) == 0);
   assert(leastCommonAncestor(2, 4611686018427387905ull) == 0);
+
+  // ************************************************************
+  // toMid()
+  point_t p;
+  p.x = 0.5;
+  p.y = 0.5;
+  assert(toMid(p, 1) == 13835058055282163713ull);
 
   return 0;
 }

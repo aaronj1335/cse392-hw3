@@ -25,6 +25,7 @@ typedef uint8_t lvl_t;
 // number of bits to store the levels
 #define LEVEL_BITS 6
 #define LEVEL_MASK ((1 << LEVEL_BITS) - 1)
+#define MAX_LEVEL ((BITS - LEVEL_BITS) / D)
 
 #define MORTON_BITS (BITS - LEVEL_BITS)
 
