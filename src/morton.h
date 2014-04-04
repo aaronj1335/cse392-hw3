@@ -52,6 +52,7 @@ midlvl_t nextPossibleSibling(midlvl_t n);
 // returns -1 if item not found
 int binsrch(midlvl_t const* const tree, size_t l, midlvl_t needle);
 
+void children(midlvl_t const* const tree, size_t l, size_t idx, int* sibs);
 void siblings(midlvl_t const* const tree, size_t l, size_t idx, int* sibs);
 
 midlvl_t leastCommonAncestor(midlvl_t n1, midlvl_t n2);

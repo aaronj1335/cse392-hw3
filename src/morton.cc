@@ -90,13 +90,10 @@ int binsrch(midlvl_t const* const tree, size_t l, midlvl_t needle) {
   return -1;
 }
 
-void siblings(midlvl_t const* const tree, size_t l, size_t idx, int* sibs) {
-  midlvl_t m = tree[idx];
-  midlvl_t p = parent(m);
-  int pIdx = binsrch(tree, idx + 1, p);
-  int cIdx = pIdx + 1;
+void children(midlvl_t const* const tree, size_t l, size_t idx, int* sibs) {
+  int cIdx = idx + 1;
 
-  if (pIdx < 0 || !isAncestor(p, tree[cIdx])) {
+  if (!isAncestor(tree[idx], tree[cIdx])) {
     for (size_t i = 0; i < NC; i++)
       sibs[i] = -1;
     return;
@@ -112,12 +109,18 @@ void siblings(midlvl_t const* const tree, size_t l, size_t idx, int* sibs) {
 
   do {
     nexPossibleChild = nextPossibleSibling(nexPossibleChild);
-    cIdx = binsrch(&tree[pIdx], l - pIdx, nexPossibleChild);
+    cIdx = binsrch(&tree[idx], l - idx, nexPossibleChild);
     sibIdx++;
 
-    sibs[sibIdx] = cIdx >= 0? pIdx + cIdx : -1;
+    sibs[sibIdx] = cIdx >= 0? idx + cIdx : -1;
 
   } while (couldHaveNextSibling(nexPossibleChild));
+}
+
+void siblings(midlvl_t const* const tree, size_t l, size_t idx, int* sibs) {
+  int pIdx = binsrch(tree, idx, parent(tree[idx]));
+
+  return children(tree, l, pIdx, sibs);
 }
 
 midlvl_t leastCommonAncestor(midlvl_t n1, midlvl_t n2) {

@@ -132,9 +132,25 @@ int main(int argc, char* argv[]) {
   assert(binsrch(a2, 6, 6) == -1);
 
   // ************************************************************
-  // siblings()
+  // children()
   int v[] ={INT_MAX, INT_MAX, INT_MAX, INT_MAX};
   int expected1[] = {7, 8, 9, 10};
+  children(fixture1, 16, 6, v);
+  assert(equal(v, expected1, NC));
+
+  int expected2[] = {1, 6, -1, 11};
+  init(v);
+  children(fixture1, 16, 0, v);
+  assert(equal(v, expected2, NC));
+
+  int expected3[] = {-1, -1, 12, 13};
+  init(v);
+  children(fixture2, 14, 11, v);
+  assert(equal(v, expected3, NC));
+
+  // ************************************************************
+  // siblings()
+  init(v);
   siblings(fixture1, 16, 7, v);
   assert(equal(v, expected1, NC));
 
@@ -150,12 +166,10 @@ int main(int argc, char* argv[]) {
   siblings(fixture1, 16, 10, v);
   assert(equal(v, expected1, NC));
 
-  int expected2[] = {1, 6, -1, 11};
   init(v);
   siblings(fixture1, 16, 6, v);
   assert(equal(v, expected2, NC));
 
-  int expected3[] = {-1, -1, 12, 13};
   init(v);
   siblings(fixture2, 14, 12, v);
   assert(equal(v, expected3, NC));
