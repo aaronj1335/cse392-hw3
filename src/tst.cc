@@ -160,6 +160,13 @@ int main(int argc, char* argv[]) {
   siblings(fixture2, 14, 12, v);
   assert(equal(v, expected3, NC));
 
+  // ************************************************************
+  // leastCommonAncestor()
+  assert(leastCommonAncestor(2, 1152921504606846978ull) == 1);
+  assert(leastCommonAncestor(1, 2) == 0);
+  assert(leastCommonAncestor(2, 1) == 0);
+  assert(leastCommonAncestor(2, 4611686018427387905ull) == 0);
+
   return 0;
 }
 

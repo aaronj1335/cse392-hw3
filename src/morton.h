@@ -54,4 +54,6 @@ int binsrch(midlvl_t const* const tree, size_t l, midlvl_t needle);
 
 void siblings(midlvl_t const* const tree, size_t l, size_t idx, int* sibs);
 
+midlvl_t leastCommonAncestor(midlvl_t n1, midlvl_t n2);
+
 #endif

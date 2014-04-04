@@ -119,3 +119,12 @@ void siblings(midlvl_t const* const tree, size_t l, size_t idx, int* sibs) {
 
   } while (couldHaveNextSibling(nexPossibleChild));
 }
+
+midlvl_t leastCommonAncestor(midlvl_t n1, midlvl_t n2) {
+  midlvl_t cur = n1;
+
+  while (!isAncestor(cur, n1) || !isAncestor(cur, n2))
+    cur = parent(cur);
+
+  return cur;
+}
