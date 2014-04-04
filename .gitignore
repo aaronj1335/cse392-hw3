@@ -4,3 +4,5 @@ bh
 obj
 var
 nbody
+bin/test
+bin/nbody

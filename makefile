@@ -2,8 +2,11 @@ CC = g++
 GCC = gcc
 FLAGS = -Wall -Werror
 LIBRARIES = -fopenmp
-Q2_TARGET = nbody
-TEST_TARGET = tst
+BIN_DIR = bin
+Q2_TARGET_BASE = nbody
+TEST_TARGET_BASE = test
+Q2_TARGET = $(BIN_DIR)/$(Q2_TARGET_BASE)
+TEST_TARGET = $(BIN_DIR)/$(TEST_TARGET_BASE)
 
 ifeq ($(shell uname), Darwin)
 	CC = g++-4.8
@@ -17,8 +20,8 @@ VAR_DIR = $(SCRATCH)/var
 INPUTS = $(wildcard $(SRC_DIR)/*.cc)
 INPUTS_TMP = $(subst $(SRC_DIR),$(OBJ_DIR),$(INPUTS))
 OBJECTS = $(INPUTS_TMP:%.cc=%.o)
-Q2_OBJECTS = $(filter-out $(OBJ_DIR)/$(TEST_TARGET).o, $(OBJECTS))
-TEST_OBJECTS = $(filter-out $(OBJ_DIR)/$(Q2_TARGET).o, $(OBJECTS))
+Q2_OBJECTS = $(filter-out $(OBJ_DIR)/$(TEST_TARGET_BASE).o, $(OBJECTS))
+TEST_OBJECTS = $(filter-out $(OBJ_DIR)/$(Q2_TARGET_BASE).o, $(OBJECTS))
 DEPFILES = $(OBJECTS:%.o=%.d)
 
 # ifeq ($(OMP_NUM_THREADS), 1)
@@ -40,10 +43,10 @@ REPORT_SRC = report/report.md
 
 all: $(Q2_TARGET) $(TEST_TARGET)
 
-$(Q2_TARGET): $(Q2_OBJECTS)
+$(Q2_TARGET): $(Q2_OBJECTS) | $(BIN_DIR)
 	$(CC) $(FLAGS) $(LIBRARIES) -o $@ $(Q2_OBJECTS)
 
-$(TEST_TARGET): $(TEST_OBJECTS)
+$(TEST_TARGET): $(TEST_OBJECTS) | $(BIN_DIR)
 	$(CC) $(FLAGS) $(LIBRARIES) -o $@ $(TEST_OBJECTS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc | $(OBJ_DIR)
@@ -54,6 +57,9 @@ $(OBJ_DIR)/%.d: $(SRC_DIR)/%.cc | $(OBJ_DIR)
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
+
+$(BIN_DIR):
+	mkdir $(BIN_DIR)
 
 
 # running, testing, etc
@@ -121,7 +127,7 @@ zip_abhi: clean
 
 .PHONY: clean
 clean:
-	-rm -rf $(OBJ_DIR) $(VAR_DIR) $(Q2_TARGET)
+	-rm -rf $(OBJ_DIR) $(VAR_DIR) $(Q2_TARGET) $(TEST_TARGET)
 
 -include $(DEPFILES)
 
