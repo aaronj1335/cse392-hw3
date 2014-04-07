@@ -1,7 +1,8 @@
 CC = g++
 GCC = gcc
+DB = lldb
 FLAGS = -Wall -Werror
-LIBRARIES = -fopenmp
+LIBRARIES = -fopenmp -ltbb
 BIN_DIR = bin
 Q2_TARGET_BASE = nbody
 TEST_TARGET_BASE = test
@@ -10,6 +11,10 @@ TEST_TARGET = $(BIN_DIR)/$(TEST_TARGET_BASE)
 
 ifeq ($(shell uname), Darwin)
 	CC = g++-4.8
+endif
+
+ifeq ($(DEBUG), 1)
+	FLAGS += -g
 endif
 
 SRC_DIR = src
@@ -65,8 +70,11 @@ $(BIN_DIR):
 # running, testing, etc
 
 test: all
-	@./$(TEST_TARGET)
+	@export OMP_NUM_THREADS=2 && ./$(TEST_TARGET)
+	@export OMP_NUM_THREADS=4 && ./$(TEST_TARGET)
 
+debug: all
+	@export OMP_NUM_THREADS=2 && lldb ./$(TEST_TARGET)
 
 # report
 

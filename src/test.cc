@@ -28,6 +28,33 @@ bool equal(int* a, int* b, size_t l) {
   return eql;
 }
 
+bool sorted(midlvl_t* mids, size_t n, size_t* idxs) {
+  bool sorted = true;
+  bool allocateAndFreeIdxs = idxs == NULL;
+
+  if (allocateAndFreeIdxs) {
+    idxs = new size_t[n];
+    #pragma omp parallel for
+      for (size_t i = 0; i < n; i++)
+        idxs[i] = i;
+  }
+
+  #pragma omp parallel for
+    for (size_t i = 1; i < n; i++) {
+      bool greater = mids[idxs[i]] >= mids[idxs[i - 1]];
+      sorted = sorted && greater;
+    }
+
+  if (allocateAndFreeIdxs)
+    delete idxs;
+
+  return sorted;
+}
+
+bool sorted(midlvl_t* mids, size_t n) {
+  return sorted(mids, n, NULL);
+}
+
 void init(int* a) {
   for (size_t i = 0; i < NC; i++)
     a[i] = INT_MAX;
@@ -184,10 +211,26 @@ int main(int argc, char* argv[]) {
 
   // ************************************************************
   // toMid()
-  point_t p;
-  p.x = 0.5;
-  p.y = 0.5;
+  point_t p(0.5, 0.5);
   assert(toMid(p, 1) == 13835058055282163713ull);
+
+  // ************************************************************
+  // sortByMid()
+  size_t n = 1 << 20;
+  point_t*  points = new point_t[n];
+  midlvl_t* mids = new midlvl_t[n];
+  size_t*   idxs = new size_t[n];
+
+  #pragma omp parallel for
+    for (size_t i = 0; i < n; i++) {
+      points[i].x = ((double) rand()) / ((double) RAND_MAX);
+      points[i].y = ((double) rand()) / ((double) RAND_MAX);
+      mids[i] = toMid(points[i], 1);
+    }
+
+  assert(!sorted(mids, n));
+  sortByMid(points, mids, idxs, n);
+  assert(sorted(mids, n, idxs));
 
   return 0;
 }
