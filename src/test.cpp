@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
   assert(sorted(mids, n, idxs));
 
   // ************************************************************
-  // QTreeNode()
+  // QTree()
   n = 1 << 1;
   points = new point_t[n];
   mids = new midlvl_t[n];
@@ -248,7 +248,7 @@ int main(int argc, char* argv[]) {
     }
   sortByMid(points, mids, n, idxs);
 
-  QTreeNode tree = QTreeNode(points);
+  QTree tree = QTree(points);
   tree.insert(idxs, n);
 
   assert(&tree);
