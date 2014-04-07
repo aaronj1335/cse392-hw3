@@ -4,6 +4,7 @@
 
 #include "morton.h"
 #include "body.h"
+#include "qtree.h"
 
 using namespace std;
 
@@ -231,6 +232,26 @@ int main(int argc, char* argv[]) {
   assert(!sorted(mids, n));
   sortByMid(points, mids, n, idxs);
   assert(sorted(mids, n, idxs));
+
+  // ************************************************************
+  // QTreeNode()
+  n = 1 << 1;
+  points = new point_t[n];
+  mids = new midlvl_t[n];
+  idxs = new size_t[n];
+
+  #pragma omp parallel for
+    for (size_t i = 0; i < n; i++) {
+      points[i].x = ((double) rand()) / ((double) RAND_MAX);
+      points[i].y = ((double) rand()) / ((double) RAND_MAX);
+      mids[i] = toMid(points[i], 1);
+    }
+  sortByMid(points, mids, n, idxs);
+
+  QTreeNode tree = QTreeNode(points);
+  tree.insert(idxs, n);
+
+  assert(&tree);
 
   return 0;
 }

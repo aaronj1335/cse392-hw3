@@ -22,9 +22,9 @@ OBJ_DIR = obj
 SCRATCH ?= .
 VAR_DIR = $(SCRATCH)/var
 
-INPUTS = $(wildcard $(SRC_DIR)/*.cc)
+INPUTS = $(wildcard $(SRC_DIR)/*.cpp)
 INPUTS_TMP = $(subst $(SRC_DIR),$(OBJ_DIR),$(INPUTS))
-OBJECTS = $(INPUTS_TMP:%.cc=%.o)
+OBJECTS = $(INPUTS_TMP:%.cpp=%.o)
 Q2_OBJECTS = $(filter-out $(OBJ_DIR)/$(TEST_TARGET_BASE).o, $(OBJECTS))
 TEST_OBJECTS = $(filter-out $(OBJ_DIR)/$(Q2_TARGET_BASE).o, $(OBJECTS))
 DEPFILES = $(OBJECTS:%.o=%.d)
@@ -54,10 +54,10 @@ $(Q2_TARGET): $(Q2_OBJECTS) | $(BIN_DIR)
 $(TEST_TARGET): $(TEST_OBJECTS) | $(BIN_DIR)
 	$(CC) $(FLAGS) $(LIBRARIES) -o $@ $(TEST_OBJECTS)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CC) $(FLAGS) $(LIBRARIES) -c -o $@ $<
 
-$(OBJ_DIR)/%.d: $(SRC_DIR)/%.cc | $(OBJ_DIR)
+$(OBJ_DIR)/%.d: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CC) $(FLAGS) $(LIBRARIES) -M -MF $@ -MT $(@:%.d=%.o) $<
 
 $(OBJ_DIR):
@@ -73,6 +73,9 @@ test: all
 	@export OMP_NUM_THREADS=2 && ./$(TEST_TARGET)
 	@export OMP_NUM_THREADS=4 && ./$(TEST_TARGET)
 
+# note that when doing this, there's a good chance you'll need to
+# `make clean && DEBUG=1 make debug`, and then `DEBUG=1 make debug` on all
+# subsequent commands
 debug: all
 	@export OMP_NUM_THREADS=2 && lldb ./$(TEST_TARGET)
 

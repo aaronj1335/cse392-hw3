@@ -1,7 +1,7 @@
 #ifndef __morton__
 #define __morton__
 
-#include <stdint.h>
+#include <stdlib.h>
 
 // this is used to represent the combined morton id and level info (and doesn't
 // actually provide type safety!)
