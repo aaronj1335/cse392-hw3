@@ -229,7 +229,7 @@ int main(int argc, char* argv[]) {
     }
 
   assert(!sorted(mids, n));
-  sortByMid(points, mids, idxs, n);
+  sortByMid(points, mids, n, idxs);
   assert(sorted(mids, n, idxs));
 
   return 0;

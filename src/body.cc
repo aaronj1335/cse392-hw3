@@ -47,12 +47,19 @@ midlvl_t toMid(point_t p, lvl_t level) {
 }
 
 void sortByMid(point_t const* const points, midlvl_t const* const mids,
-    size_t* idxs, size_t n) {
+    const size_t n, size_t* idxs) {
 
   #pragma omp parallel for
     for (size_t i = 0; i < n; i++)
       idxs[i] = i;
 
   parallel_sort(idxs, idxs + n, comparator_t(mids, n));
+}
+
+void partition(midlvl_t const* const mids, size_t const* const idxs,
+    const size_t n, midlvl_t* partitions) {
+  #pragma omp parallel for
+    for (size_t i = 0; i < n; i++)
+      partitions[i] = mids[idxs[i]];
 }
 
