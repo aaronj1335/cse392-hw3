@@ -256,7 +256,7 @@ int main(int argc, char* argv[]) {
 
   // ************************************************************
   // QTree::iterator
-  n = 1 << 20;
+  n = 1 << 10;
   points = new point_t[n];
   mids = new midlvl_t[n];
   idxs = new size_t[n];
