@@ -17,15 +17,15 @@ typedef uint8_t lvl_t;
 #define BITS (sizeof(midlvl_t) * 8)
 
 // dimension of the points
-#define D 2
+#define DIM 2
 
 // number of children per tree node
-#define NC (1 << D)
+#define NUM_KIDS (1 << DIM)
 
 // number of bits to store the levels
 #define LEVEL_BITS 6
 #define LEVEL_MASK ((1 << LEVEL_BITS) - 1)
-#define MAX_LEVEL ((BITS - LEVEL_BITS) / D)
+#define MAX_LEVEL ((BITS - LEVEL_BITS) / DIM)
 
 #define MORTON_BITS (BITS - LEVEL_BITS)
 

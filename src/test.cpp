@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <assert.h>
 #include <stdio.h>
 #include <limits.h>
@@ -20,7 +22,7 @@ uint64_t fixture2[] = {0ull, 1ull, 2ull, 1152921504606846978ull,
   8070450532247928834ull, 13835058055282163713ull, 16140901064495857666ull,
   17293822569102704642ull};
 
-bool equal(int* a, int* b, size_t l) {
+bool isEqual(int* a, int* b, size_t l) {
   bool eql = true;
 
   for (size_t i = 0; i < l; i++)
@@ -57,7 +59,7 @@ bool sorted(midlvl_t* mids, size_t n) {
 }
 
 void init(int* a) {
-  for (size_t i = 0; i < NC; i++)
+  for (size_t i = 0; i < NUM_KIDS; i++)
     a[i] = INT_MAX;
 }
 
@@ -165,43 +167,43 @@ int main(int argc, char* argv[]) {
   int v[] ={INT_MAX, INT_MAX, INT_MAX, INT_MAX};
   int expected1[] = {7, 8, 9, 10};
   children(fixture1, 16, 6, v);
-  assert(equal(v, expected1, NC));
+  assert(isEqual(v, expected1, NUM_KIDS));
 
   int expected2[] = {1, 6, -1, 11};
   init(v);
   children(fixture1, 16, 0, v);
-  assert(equal(v, expected2, NC));
+  assert(isEqual(v, expected2, NUM_KIDS));
 
   int expected3[] = {-1, -1, 12, 13};
   init(v);
   children(fixture2, 14, 11, v);
-  assert(equal(v, expected3, NC));
+  assert(isEqual(v, expected3, NUM_KIDS));
 
   // ************************************************************
   // siblings()
   init(v);
   siblings(fixture1, 16, 7, v);
-  assert(equal(v, expected1, NC));
+  assert(isEqual(v, expected1, NUM_KIDS));
 
   init(v);
   siblings(fixture1, 16, 8, v);
-  assert(equal(v, expected1, NC));
+  assert(isEqual(v, expected1, NUM_KIDS));
 
   init(v);
   siblings(fixture1, 16, 9, v);
-  assert(equal(v, expected1, NC));
+  assert(isEqual(v, expected1, NUM_KIDS));
 
   init(v);
   siblings(fixture1, 16, 10, v);
-  assert(equal(v, expected1, NC));
+  assert(isEqual(v, expected1, NUM_KIDS));
 
   init(v);
   siblings(fixture1, 16, 6, v);
-  assert(equal(v, expected2, NC));
+  assert(isEqual(v, expected2, NUM_KIDS));
 
   init(v);
   siblings(fixture2, 14, 12, v);
-  assert(equal(v, expected3, NC));
+  assert(isEqual(v, expected3, NUM_KIDS));
 
   // ************************************************************
   // leastCommonAncestor()
@@ -240,18 +242,38 @@ int main(int argc, char* argv[]) {
   mids = new midlvl_t[n];
   idxs = new size_t[n];
 
-  #pragma omp parallel for
-    for (size_t i = 0; i < n; i++) {
-      points[i].x = ((double) rand()) / ((double) RAND_MAX);
-      points[i].y = ((double) rand()) / ((double) RAND_MAX);
-      mids[i] = toMid(points[i], 1);
-    }
+  for (size_t i = 0; i < n; i++) {
+    points[i].x = ((double) rand()) / ((double) RAND_MAX);
+    points[i].y = ((double) rand()) / ((double) RAND_MAX);
+    mids[i] = toMid(points[i], 1);
+  }
   sortByMid(points, mids, n, idxs);
 
-  QTree tree = QTree(points);
+  QTree tree(points);
   tree.insert(idxs, n);
 
   assert(&tree);
+
+  // ************************************************************
+  // QTree::iterator
+  n = 1 << 20;
+  points = new point_t[n];
+  mids = new midlvl_t[n];
+  idxs = new size_t[n];
+
+  for (size_t i = 0; i < n; i++) {
+    points[i].x = ((double) rand()) / ((double) RAND_MAX);
+    points[i].y = ((double) rand()) / ((double) RAND_MAX);
+    mids[i] = toMid(points[i], 1);
+  }
+  sortByMid(points, mids, n, idxs);
+
+  QTree tree4(points);
+  for (size_t i = 0; i < n; i++) {
+    tree4.insert(idxs[i]);
+    for (QTree::iterator it = tree4.begin(); it != tree4.end(); it++)
+      *it;
+  }
 
   return 0;
 }

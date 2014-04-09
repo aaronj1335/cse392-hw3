@@ -25,7 +25,7 @@ midlvl_t toMid(point_t p, lvl_t level) {
   mid_t m = 0;
   mid_t pointMask = 1;
   mid_t midMask = 1;
-  size_t numBits = MORTON_BITS / D;
+  size_t numBits = MORTON_BITS / DIM;
   mid_t max = ((mid_t) 1) << numBits;
   mid_t x = (mid_t) (p.x * max);
   mid_t y = (mid_t) (p.y * max);

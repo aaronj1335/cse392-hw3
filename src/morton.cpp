@@ -24,7 +24,7 @@ bool isAncestor(mid_t anc, lvl_t ancLvl, mid_t desc, lvl_t descLvl) {
 
 midlvl_t parent(midlvl_t n) {
   lvl_t l = lvl(n);
-  unsigned int shift = MORTON_BITS - (D * (l - 1));
+  unsigned int shift = MORTON_BITS - (DIM * (l - 1));
   mid_t parentMid = mid(n) >> shift << shift;
 
   return midlvl(parentMid, l - 1);
@@ -32,25 +32,25 @@ midlvl_t parent(midlvl_t n) {
 
 mid_t childIndex(midlvl_t n) {
   lvl_t l = lvl(n);
-  unsigned int parentBits = (l - 1) * D;
+  unsigned int parentBits = (l - 1) * DIM;
 
-  return mid(n << parentBits >> (parentBits + MORTON_BITS - D * l));
+  return mid(n << parentBits >> (parentBits + MORTON_BITS - DIM * l));
 }
 
 bool couldHaveNextSibling(midlvl_t n) {
   mid_t idx = childIndex(n);
 
-  return idx < (1 << D) - 1;
+  return idx < (1 << DIM) - 1;
 }
 
 midlvl_t nextPossibleSibling(midlvl_t n) {
   lvl_t l = lvl(n);
 
   // i don't understand why i need to separate these two calls
-  mid_t siblingMask = ((1 << D) - 1);
-  siblingMask = ~(siblingMask << (MORTON_BITS - (l * D)));
+  mid_t siblingMask = ((1 << DIM) - 1);
+  siblingMask = ~(siblingMask << (MORTON_BITS - (l * DIM)));
 
-  mid_t idx = (childIndex(n) + 1) << (MORTON_BITS - (l * D));
+  mid_t idx = (childIndex(n) + 1) << (MORTON_BITS - (l * DIM));
   mid_t m = (mid(n) & siblingMask) | idx;
 
   return midlvl(m, l);
@@ -76,7 +76,7 @@ void children(midlvl_t const* const tree, size_t l, size_t idx, int* sibs) {
   int cIdx = idx + 1;
 
   if (!isAncestor(tree[idx], tree[cIdx])) {
-    for (size_t i = 0; i < NC; i++)
+    for (size_t i = 0; i < NUM_KIDS; i++)
       sibs[i] = -1;
     return;
   }
