@@ -15,6 +15,7 @@ class QTree {
     void insert(size_t const* const idxs, const size_t n);
     void insert(size_t idx);
 
+    // inorder, depth-first iterator, to be speicific
     class iterator {
       public:
         iterator(QTree* ptr);
