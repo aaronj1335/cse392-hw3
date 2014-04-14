@@ -31,12 +31,12 @@ midlvl_t toMid(point_t p, lvl_t level) {
   mid_t y = (mid_t) (p.y * max);
 
   for (size_t i = 0; i < numBits; i++) {
-    if (y & pointMask)
+    if (x & pointMask)
       m |= midMask;
 
     midMask = midMask << 1;
 
-    if (x & pointMask)
+    if (y & pointMask)
       m |= midMask;
 
     midMask = midMask << 1;
