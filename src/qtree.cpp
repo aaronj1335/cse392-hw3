@@ -2,7 +2,7 @@
 
 #include "qtree.h"
 
-QTree::QTree(point_t const* const points, const size_t level,
+QTree::QTree(point_t const* const points, const lvl_t level,
     double const* const coord, double width, QTree* parent) :
   points(points),
   level(level),
@@ -16,7 +16,7 @@ QTree::QTree(point_t const* const points, const size_t level,
 }
 
 void QTree::createKids() {
-  size_t kidLevel = level + 1;
+  lvl_t kidLevel = level + 1;
   double kidWidth = width / 2.;
 
   for (size_t i = 0; i < NUM_KIDS; i++) {
@@ -47,14 +47,14 @@ QTree* QTree::getKidForPoint(const point_t point) const {
   return kids[which];
 }
 
-void QTree::insert(size_t const* const idxs, const size_t n) {
-  if (!n)
+void QTree::insert(size_t const* const idxs, const size_t l) {
+  if (!l)
     return;
 
   if (isLeaf) {
     // if the following holds, we're just inserting a single point into this
     // node, so we can do that and return
-    if (n == 1 && (isEmpty || idxs[0] == idx)) {
+    if (l == 1 && (isEmpty || idxs[0] == idx)) {
       isEmpty = false;
       idx = idxs[0];
       return;
@@ -73,7 +73,7 @@ void QTree::insert(size_t const* const idxs, const size_t n) {
     insert(idx);
   }
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < l; i++) {
     QTree* kid = getKidForPoint(points[idxs[i]]);
     kid->insert(idxs[i]);
   }
@@ -81,6 +81,13 @@ void QTree::insert(size_t const* const idxs, const size_t n) {
 
 void QTree::insert(const size_t idx) {
   return insert(&idx, 1);
+}
+
+midlvl_t QTree::toMid() const {
+  assert(!(isLeaf && isEmpty));
+  return isLeaf?
+    ::toMid(points[idx], level) :
+    ::toMid(point_t(coord[0], coord[1]), level);
 }
 
 QTree::iterator::iterator(QTree* ptr) : ptr(ptr), start(ptr) { }
@@ -136,9 +143,16 @@ QTree* QTree::iterator::next(QTree const* p) const {
   return NULL;
 }
 
+// right now this implmentation is complicated by the fact that we don't care
+// about non-empty leaf nodes (the `if (ptr && ptr->isLeaf && ptr->isEmpty)`
+// conditions). we should break this out into two iterators, one over all the
+// nodes and one (presumably default) that just composes that iterator but
+// filters out empty leaf nodes.
 void QTree::iterator::advance() {
   if (ptr == start) {
     ptr = ptr->isLeaf? NULL : next(ptr);
+    if (ptr && ptr->isLeaf && ptr->isEmpty)
+      advance();
     return;
   }
 
@@ -152,6 +166,9 @@ void QTree::iterator::advance() {
 
   if (ptr == start)
     ptr = NULL;
+
+  if (ptr && ptr->isLeaf && ptr->isEmpty)
+    advance();
 }
 
 QTree::iterator QTree::begin() {
@@ -163,16 +180,16 @@ QTree::iterator QTree::end() {
 }
 
 std::ostream& operator<<(std::ostream& os, const QTree& tree) {
-  os << "QTree<" << &tree << ", " << tree.level << ", ";
+  os << "QTree<" << &tree << ", " << (unsigned int) tree.level << ", ";
 
   if (tree.isLeaf)
     if (tree.isEmpty)
       os << "empty leaf";
     else
-      os << "(" << tree.points[tree.idx].x << ", "
+      os << "L (" << tree.points[tree.idx].x << ", "
         << tree.points[tree.idx].y << ")";
   else
-    os << "parent";
+    os << "P (" << tree.coord[0] << ", " << tree.coord[1] << ")";
 
   os << ">";
 

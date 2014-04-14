@@ -60,4 +60,7 @@ void siblings(midlvl_t const* const tree, size_t l, size_t idx, int* sibs);
 
 midlvl_t leastCommonAncestor(midlvl_t n1, midlvl_t n2);
 
+size_t subtreeSize(midlvl_t const* const tree, const size_t l,
+    const size_t idx);
+
 #endif

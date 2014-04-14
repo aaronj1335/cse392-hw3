@@ -8,12 +8,14 @@
 
 class QTree {
   public:
-    QTree(point_t const* const points, const size_t level = 0,
+    QTree(point_t const* const points, const lvl_t level = 0,
         double const* const coord = NULL, double width = 1,
         QTree* parent = NULL);
 
-    void insert(size_t const* const idxs, const size_t n);
+    void insert(size_t const* const idxs, const size_t l);
     void insert(size_t idx);
+
+    midlvl_t toMid() const;
 
     // inorder, depth-first iterator, to be speicific
     class iterator {
@@ -42,7 +44,7 @@ class QTree {
 
   private:
     point_t const* const points;
-    const size_t level;
+    const lvl_t level;
     const double width;
 
     bool isLeaf;
@@ -55,9 +57,12 @@ class QTree {
     // 2: upper-left
     // 3: upper-right
     double coord[DIM];
-    // this is only meaningful if `isLeaf == true`
+    // this is this node's index in the `points` array.  this is only
+    // meaningful if `isLeaf == true`
     size_t idx;
 
+    // given a point, return the node in the `kids[]` array where it belongs
+    // (based on which quadrant it belongs in)
     QTree* getKidForPoint(const point_t point) const;
 
     void createKids();

@@ -113,3 +113,32 @@ midlvl_t leastCommonAncestor(midlvl_t n1, midlvl_t n2) {
 
   return cur;
 }
+
+size_t subtreeSize(midlvl_t const* const tree, const size_t l,
+    const size_t idx) {
+
+  midlvl_t cur = tree[idx];
+
+  if (couldHaveNextSibling(cur) && lvl(tree[idx + 1]) == lvl(cur)) {
+    return 0;
+  }
+
+  while (cur > 0) {
+    if (couldHaveNextSibling(cur)) {
+      int pIdx;
+
+      do {
+        cur = nextPossibleSibling(cur);
+        // should search here from &tree[idx]?
+        pIdx = binsrch(tree, l, cur);
+      } while (pIdx < 0 && couldHaveNextSibling(cur));
+
+      if (pIdx >= 0)
+        return pIdx - idx - 1;
+    }
+
+    cur = parent(cur);
+  }
+
+  return l - idx - 1;
+}
