@@ -9,6 +9,7 @@
 #include "morton.h"
 #include "body.h"
 #include "qtree.h"
+#include "euler.h"
 
 using namespace std;
 
@@ -382,6 +383,16 @@ int main(int argc, char* argv[]) {
   assert(subtreeSize(&fullTree[0], fullTree.size(), 5) == 4);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 11) == 0);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 12) == 0);
+
+  // ************************************************************
+  cerr << "======================================== eulerTour" << endl;
+
+  size_t* inIdxs = new size_t[fullTree.size()];
+  size_t* outIdxs = new size_t[fullTree.size()];
+
+  eulerTour(&(fullTree[0]), fullTree.size(), inIdxs, outIdxs);
+
+  assert(false); // need to ensure that inIdxs and outIdxs are correct
 
   return 0;
 }
