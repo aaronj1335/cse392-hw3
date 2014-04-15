@@ -10,6 +10,7 @@
 #include "body.h"
 #include "qtree.h"
 #include "euler.h"
+#include "util.h"
 
 using namespace std;
 
@@ -358,6 +359,37 @@ int main(int argc, char* argv[]) {
   //  28  15348654668895592130 QTree<0x7fc6b9e1e400, 2, L (0.943446, 0.501017)>
   //  29  17306860877768997314 QTree<0x7fc6b9e1e4c0, 2, L (0.76092, 0.777598)>
 
+  //   0 QTree<0x7fff578ad240, 0, P (0, 0)>
+  //   1     QTree<0x7fc4c942e6a0, 1, P (0, 0)>
+  //   2         QTree<0x7fc4c942e820, 2, P (0, 0)>
+  //   3             QTree<0x7fc4c942e9a0, 3, L (0.0899074, 0.0728559)>
+  //   4             QTree<0x7fc4c942ea00, 3, L (0.241987, 0.0781364)>
+  //   5         QTree<0x7fc4c942e940, 2, P (0.25, 0.25)>
+  //   6             QTree<0x7fc4c942eb20, 3, P (0.25, 0.25)>
+  //   7                 QTree<0x7fc4c942eca0, 4, L (0.307982, 0.259371)>
+  //   8                 QTree<0x7fc4c942ed00, 4, L (0.318576, 0.301914)>
+  //   9             QTree<0x7fc4c942ec40, 3, L (0.48988, 0.405702)>
+  //  10     QTree<0x7fc4c942e700, 1, P (0.5, 0)>
+  //  11         QTree<0x7fc4c942ee20, 2, L (0.584999, 0.0834366)>
+  //  12         QTree<0x7fc4c942ee80, 2, L (0.943668, 0.227026)>
+  //  13         QTree<0x7fc4c942eee0, 2, P (0.5, 0.25)>
+  //  14             QTree<0x7fc4c942efa0, 3, P (0.5, 0.25)>
+  //  15                 QTree<0x7fc4c942f180, 4, P (0.5625, 0.25)>
+  //  16                     QTree<0x7fc4c942f2a0, 5, L (0.582333, 0.269646)>
+  //  17                     QTree<0x7fc4c942f3c0, 5, L (0.610775, 0.297957)>
+  //  18     QTree<0x7fc4c942e760, 1, P (0, 0.5)>
+  //  19         QTree<0x7fc4c942f4e0, 2, L (0.238763, 0.881891)>
+  //  20         QTree<0x7fc4c942f540, 2, L (0.276723, 0.889071)>
+  //  21     QTree<0x7fc4c942e7c0, 1, P (0.5, 0.5)>
+  //  22         QTree<0x7fc4c942f5a0, 2, P (0.5, 0.5)>
+  //  23             QTree<0x7fc4c942f7e0, 3, P (0.5, 0.625)>
+  //  24                 QTree<0x7fc4c942f9c0, 4, P (0.5625, 0.6875)>
+  //  25                     QTree<0x7fc4c942fa80, 5, L (0.62133, 0.687648)>
+  //  26                     QTree<0x7fc4c942fb40, 5, L (0.608897, 0.731815)>
+  //  27             QTree<0x7fc4c942f840, 3, L (0.625613, 0.675141)>
+  //  28         QTree<0x7fc4c942f600, 2, L (0.943446, 0.501017)>
+  //  29         QTree<0x7fc4c942f6c0, 2, L (0.76092, 0.777598)>
+
   double rawPoints[32] = {0.582333, 0.269646, 0.943668, 0.227026, 0.62133,
     0.687648, 0.307982, 0.259371, 0.241987, 0.0781364, 0.238763, 0.881891,
     0.943446, 0.501017, 0.584999, 0.0834366, 0.318576, 0.301914, 0.276723,
@@ -374,25 +406,34 @@ int main(int argc, char* argv[]) {
     tree6.insert(idxs[i]);
   vector<midlvl_t> fullTree;
   for (QTree::iterator it = tree6.begin(); it != tree6.end(); it++)
-    fullTree.push_back(it->toMid());
+    fullTree.push_back(it->toMid(true));
 
   assert(subtreeSize(&fullTree[0], fullTree.size(), 0) == 29);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 1) == 8);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 2) == 2);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 3) == 0);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 5) == 4);
+  assert(subtreeSize(&fullTree[0], fullTree.size(), 6) == 2);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 11) == 0);
   assert(subtreeSize(&fullTree[0], fullTree.size(), 12) == 0);
+  assert(subtreeSize(&fullTree[0], fullTree.size(), 22) == 5);
 
   // ************************************************************
   cerr << "======================================== eulerTour" << endl;
 
   size_t* inIdxs = new size_t[fullTree.size()];
   size_t* outIdxs = new size_t[fullTree.size()];
+  size_t expectedInIdxs[] = {0, 1, 2, 3, 5, 8, 9, 10, 12, 15, 19, 20, 22, 24,
+    25, 26, 27, 29, 35, 36, 38, 41, 42, 43, 44, 45, 47, 51, 54, 56};
+  size_t expectedOutIdxs[] = {59, 18, 7, 4, 6, 17, 14, 11, 13, 16, 34, 21, 23,
+    33, 32, 31, 28, 30, 40, 37, 39, 58, 53, 50, 49, 46, 48, 52, 55, 57};
 
   eulerTour(&(fullTree[0]), fullTree.size(), inIdxs, outIdxs);
 
-  assert(false); // need to ensure that inIdxs and outIdxs are correct
+  for (size_t i = 0; i < fullTree.size(); i++) {
+    assert(inIdxs[i] == expectedInIdxs[i]);
+    assert(outIdxs[i] == expectedOutIdxs[i]);
+  }
 
   return 0;
 }
