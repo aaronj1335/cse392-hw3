@@ -83,9 +83,9 @@ void QTree::insert(const size_t idx) {
   return insert(&idx, 1);
 }
 
-midlvl_t QTree::toMid() const {
+midlvl_t QTree::toMid(const bool useAnchor) const {
   assert(!(isLeaf && isEmpty));
-  return isLeaf?
+  return isLeaf && !useAnchor?
     ::toMid(points[idx], level) :
     ::toMid(point_t(coord[0], coord[1]), level);
 }

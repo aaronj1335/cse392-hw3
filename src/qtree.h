@@ -15,7 +15,7 @@ class QTree {
     void insert(size_t const* const idxs, const size_t l);
     void insert(size_t idx);
 
-    midlvl_t toMid() const;
+    midlvl_t toMid(const bool useAnchor = false) const;
 
     // inorder, depth-first iterator, to be speicific
     class iterator {
