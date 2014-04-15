@@ -90,6 +90,10 @@ midlvl_t QTree::toMid(const bool useAnchor) const {
     ::toMid(point_t(coord[0], coord[1]), level);
 }
 
+lvl_t QTree::lvl() const {
+  return level;
+}
+
 QTree::iterator::iterator(QTree* ptr) : ptr(ptr), start(ptr) { }
 
 QTree::iterator QTree::iterator::operator++() {

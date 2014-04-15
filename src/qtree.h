@@ -17,6 +17,8 @@ class QTree {
 
     midlvl_t toMid(const bool useAnchor = false) const;
 
+    lvl_t lvl() const;
+
     // inorder, depth-first iterator, to be speicific
     class iterator {
       public:
