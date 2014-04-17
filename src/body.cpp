@@ -1,5 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include <ostream>
 #include <omp.h>
 #include <tbb/parallel_sort.h>
 
@@ -7,6 +6,7 @@
 #include "util.h"
 
 using namespace tbb;
+using namespace std;
 
 struct comparator_t {
   comparator_t(midlvl_t const* const mids, const size_t n) : mids(mids), n(n) {}
@@ -20,6 +20,24 @@ struct comparator_t {
       return mids[a] < mids[b];
     }
 };
+
+point_t& point_t::operator+=(const point_t& rhs) {
+  weight += rhs.weight;
+  x += rhs.x * rhs.weight / weight;
+  y += rhs.y * rhs.weight / weight;
+
+  return *this;
+}
+
+const point_t point_t::operator+(const point_t& rhs) const {
+  return point_t(*this) += rhs;
+}
+
+ostream& operator<<(ostream& os, const point_t& p) {
+  os << "(" << p.x << ", " << p.y << ", " << p.weight << ")";
+
+  return os;
+}
 
 midlvl_t toMid(point_t p, lvl_t level) {
   mid_t m = 0;
