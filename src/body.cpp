@@ -34,7 +34,7 @@ point_t& point_t::operator=(const point_t& rhs) {
 }
 
 point_t& point_t::operator+=(const point_t& rhs) {
-  double newWeight = weight + rhs.weight;
+  float newWeight = weight + rhs.weight;
 
   if (!newWeight) {
     weight = newWeight;
@@ -53,7 +53,7 @@ const point_t point_t::operator+(const point_t& rhs) const {
 }
 
 point_t& point_t::operator-=(const point_t& rhs) {
-  double newWeight = weight - rhs.weight;
+  float newWeight = weight - rhs.weight;
 
   if (!newWeight) {
     weight = newWeight;

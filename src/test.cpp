@@ -68,6 +68,10 @@ void init(int* a) {
     a[i] = INT_MAX;
 }
 
+bool isClose(float a, float b) {
+  return a - b < 0.0000001;
+}
+
 int main(int argc, char* argv[]) {
   // ************************************************************
   cerr << "======================================== BITS" << endl;
@@ -247,8 +251,8 @@ int main(int argc, char* argv[]) {
 
   ps[0] += ps[1];
 
-  assert(ps[0].x == 0.9);
-  assert(ps[0].y == 0.9);
+  assert(isClose(ps[0].x, 0.9));
+  assert(isClose(ps[0].y, 0.9));
   assert(ps[0].weight == 0.5);
 
   // ************************************************************
@@ -279,9 +283,9 @@ int main(int argc, char* argv[]) {
 
   ps[0] -= ps[1];
 
-  assert(ps[0].x == 0.5);
-  assert(ps[0].y == 0.5);
-  assert(ps[0].weight - 0.1 < 0.00001);
+  assert(isClose(ps[0].x, 0.5));
+  assert(isClose(ps[0].y, 0.5));
+  assert(isClose(ps[0].weight, 0.1));
 
   // ************************************************************
   /* cerr << "======================================== point_t::operator-()" << endl; */
@@ -308,8 +312,8 @@ int main(int argc, char* argv[]) {
 
   #pragma omp parallel for
     for (size_t i = 0; i < l; i++) {
-      points[i].x = ((double) rand()) / ((double) RAND_MAX);
-      points[i].y = ((double) rand()) / ((double) RAND_MAX);
+      points[i].x = ((float) rand()) / ((float) RAND_MAX);
+      points[i].y = ((float) rand()) / ((float) RAND_MAX);
       mids[i] = toMid(points[i], 1);
     }
 
@@ -326,8 +330,8 @@ int main(int argc, char* argv[]) {
   idxs = new size_t[l];
 
   for (size_t i = 0; i < l; i++) {
-    points[i].x = ((double) rand()) / ((double) RAND_MAX);
-    points[i].y = ((double) rand()) / ((double) RAND_MAX);
+    points[i].x = ((float) rand()) / ((float) RAND_MAX);
+    points[i].y = ((float) rand()) / ((float) RAND_MAX);
     mids[i] = toMid(points[i], 1);
   }
   sortByMid(points, mids, l, idxs);
@@ -346,8 +350,8 @@ int main(int argc, char* argv[]) {
   idxs = new size_t[l];
 
   for (size_t i = 0; i < l; i++) {
-    points[i].x = ((double) rand()) / ((double) RAND_MAX);
-    points[i].y = ((double) rand()) / ((double) RAND_MAX);
+    points[i].x = ((float) rand()) / ((float) RAND_MAX);
+    points[i].y = ((float) rand()) / ((float) RAND_MAX);
     mids[i] = toMid(points[i], 1);
   }
   sortByMid(points, mids, l, idxs);
@@ -367,8 +371,8 @@ int main(int argc, char* argv[]) {
   idxs = new size_t[l];
 
   for (size_t i = 0; i < l; i++) {
-    points[i].x = ((double) rand()) / ((double) RAND_MAX);
-    points[i].y = ((double) rand()) / ((double) RAND_MAX);
+    points[i].x = ((float) rand()) / ((float) RAND_MAX);
+    points[i].y = ((float) rand()) / ((float) RAND_MAX);
     mids[i] = toMid(points[i], 1);
   }
   sortByMid(points, mids, l, idxs);
@@ -452,7 +456,7 @@ int main(int argc, char* argv[]) {
   //  28         QTree<0x7fc4c942f600, 2, L (0.943446, 0.501017)>
   //  29         QTree<0x7fc4c942f6c0, 2, L (0.76092, 0.777598)>
 
-  double rawPoints[(1 << 4) * 3] = {0.582333, 0.269646, 0.1, 0.943668, 0.227026, 0.1,
+  float rawPoints[(1 << 4) * 3] = {0.582333, 0.269646, 0.1, 0.943668, 0.227026, 0.1,
     0.62133, 0.687648, 0.1, 0.307982, 0.259371, 0.1, 0.241987, 0.0781364, 0.1,
     0.238763, 0.881891, 0.1, 0.943446, 0.501017, 0.1, 0.584999, 0.0834366, 0.1,
     0.318576, 0.301914, 0.1, 0.276723, 0.889071, 0.1, 0.608897, 0.731815, 0.1,
@@ -468,7 +472,7 @@ int main(int argc, char* argv[]) {
   for (size_t i = 0; i < l; i++)
     tree6.insert(idxs[i]);
   vector<midlvl_t> treeMids;
-  vector<double> weights;
+  vector<float> weights;
   vector<point_t> treePoints;
   for (QTree::iterator it = tree6.begin(); it != tree6.end(); it++) {
     treeMids.push_back(it->toMid(true));
@@ -508,35 +512,35 @@ int main(int argc, char* argv[]) {
   cerr << "======================================== parallelPrefixSum" << endl;
 
   size_t n = (1 << 13) + 7;
-  double* input = new double[n];
-  double* expected = new double[n];
+  float* input = new float[n];
+  float* expected = new float[n];
 
   for (size_t i = 0; i < n; i++)
-    input[i] = ((double) rand()) / ((double) RAND_MAX);
+    input[i] = ((float) rand()) / ((float) RAND_MAX);
 
   expected[0] = input[0];
   for (size_t i = 1; i < n; i++)
     expected[i] = expected[i - 1] + input[i];
 
-  parallelPrefixSum(input, n, (double) 0);
+  parallelPrefixSum(input, n, (float) 0);
   isEqual(input, expected, n);
 
   // ************************************************************
   cerr << "======================================== treePrefixSum" << endl;
 
-  double* weightsPrefixSum = new double[weights.size()];
-  double expectedPrefixSum[] = {1.6, 0.5, 0.2, 0.1, 0.1, 0.3, 0.2, 0.1, 0.1,
+  float* weightsPrefixSum = new float[weights.size()];
+  float expectedPrefixSum[] = {1.6, 0.5, 0.2, 0.1, 0.1, 0.3, 0.2, 0.1, 0.1,
     0.1, 0.4, 0.1, 0.1, 0.2, 0.2, 0.2, 0.1, 0.1, 0.2, 0.1, 0.1, 0.5, 0.3, 0.2,
     0.2, 0.1, 0.1, 0.1, 0.1, 0.1};
 
-  treePrefixSum(&weights[0], inIdxs, outIdxs, weights.size(), (double) 0,
+  treePrefixSum(&weights[0], inIdxs, outIdxs, weights.size(), (float) 0,
       weightsPrefixSum);
   isEqual(weightsPrefixSum, expectedPrefixSum, weights.size());
 
   point_t* pointPrefixSum = new point_t[treePoints.size()];
   // literally just copied this from the output didn't even check if it was
   // correct whatever
-  double expectedTreePointPrefixSum[] = {0.515362, 0.446264, 1.6, 0.289666,
+  float expectedTreePointPrefixSum[] = {0.515362, 0.446264, 1.6, 0.289666,
     0.223596, 0.5, 0.165947, 0.0754961, 0.2, 0.0899074, 0.0728559, 0.1,
     0.241987, 0.0781364, 0.1, 0.372146, 0.322329, 0.3, 0.313279, 0.280643, 0.2,
     0.307982, 0.259371, 0.1, 0.318576, 0.301914, 0.1, 0.48988, 0.405702, 0.1,
@@ -551,7 +555,7 @@ int main(int argc, char* argv[]) {
   treePrefixSum(&(treePoints[0]), inIdxs, outIdxs, treePoints.size(),
       point_t(0, 0, 0), pointPrefixSum);
 
-  isEqual((double*) pointPrefixSum, expectedTreePointPrefixSum,
+  isEqual((float*) pointPrefixSum, expectedTreePointPrefixSum,
       treePoints.size() * 3);
 
   return 0;

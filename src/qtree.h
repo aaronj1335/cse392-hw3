@@ -9,7 +9,7 @@
 class QTree {
   public:
     QTree(point_t const* const points, const lvl_t level = 0,
-        double const* const coord = NULL, double width = 1,
+        float const* const coord = NULL, float width = 1,
         QTree* parent = NULL);
 
     void insert(size_t const* const idxs, const size_t l);
@@ -49,7 +49,7 @@ class QTree {
   private:
     point_t const* const points;
     const lvl_t level;
-    const double width;
+    const float width;
 
     bool isLeaf;
     bool isEmpty;
@@ -60,7 +60,7 @@ class QTree {
     // 1: lower-right
     // 2: upper-left
     // 3: upper-right
-    double coord[DIM];
+    float coord[DIM];
     // this is this node's index in the `points` array.  this is only
     // meaningful if `isLeaf == true`
     size_t idx;

@@ -17,12 +17,12 @@ using namespace std;
 
 // points are assumed to be between 0 and 1
 struct point_t {
-  double x;
-  double y;
-  double weight;
+  float x;
+  float y;
+  float weight;
 
   point_t() {}
-  point_t(double x, double y, double weight) : x(x), y(y), weight(weight) {}
+  point_t(float x, float y, float weight) : x(x), y(y), weight(weight) {}
   point_t(const point_t& p) : x(p.x), y(p.y), weight(p.weight) {}
 
   point_t& operator=(const point_t& rhs);

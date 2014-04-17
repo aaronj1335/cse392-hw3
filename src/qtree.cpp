@@ -3,7 +3,7 @@
 #include "qtree.h"
 
 QTree::QTree(point_t const* const points, const lvl_t level,
-    double const* const coord, double width, QTree* parent) :
+    float const* const coord, float width, QTree* parent) :
   points(points),
   level(level),
   width(width),
@@ -17,13 +17,13 @@ QTree::QTree(point_t const* const points, const lvl_t level,
 
 void QTree::createKids() {
   lvl_t kidLevel = level + 1;
-  double kidWidth = width / 2.;
+  float kidWidth = width / 2.;
 
   for (size_t i = 0; i < NUM_KIDS; i++) {
-    double kidCoord[DIM];
+    float kidCoord[DIM];
 
     for (size_t j = 0; j < DIM; j++) {
-      double offset = (1 << j) & i? 1.0 : 0.0;
+      float offset = (1 << j) & i? 1.0 : 0.0;
       kidCoord[j] = coord[j] + (offset * kidWidth);
     }
 
@@ -36,8 +36,8 @@ void QTree::createKids() {
 QTree* QTree::getKidForPoint(const point_t& point) const {
   // this is shady... but it's because our point_t struct isn't
   // dimension-generic, but this friggin tree is. that was dumb.
-  double const* const pointAsPointer = (double const* const) &point;
-  double half = width / 2;
+  float const* const pointAsPointer = (float const* const) &point;
+  float half = width / 2;
   size_t which = 0;
 
   for (size_t i = 0; i < DIM; i++)
