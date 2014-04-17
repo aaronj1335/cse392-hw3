@@ -67,7 +67,7 @@ class QTree {
 
     // given a point, return the node in the `kids[]` array where it belongs
     // (based on which quadrant it belongs in)
-    QTree* getKidForPoint(const point_t point) const;
+    QTree* getKidForPoint(const point_t& point) const;
 
     void createKids();
 

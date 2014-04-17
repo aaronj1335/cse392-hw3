@@ -33,7 +33,7 @@ void QTree::createKids() {
   isLeaf = false;
 }
 
-QTree* QTree::getKidForPoint(const point_t point) const {
+QTree* QTree::getKidForPoint(const point_t& point) const {
   // this is shady... but it's because our point_t struct isn't
   // dimension-generic, but this friggin tree is. that was dumb.
   double const* const pointAsPointer = (double const* const) &point;
@@ -58,6 +58,8 @@ void QTree::insert(size_t const* const idxs, const size_t l) {
       isEmpty = false;
       idx = idxs[0];
       return;
+    } else if (isEmpty) {
+      idx = idxs[0];
     }
 
     isEmpty = false;
