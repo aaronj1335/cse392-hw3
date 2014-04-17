@@ -1,6 +1,7 @@
 #include <ostream>
 #include <omp.h>
 #include <tbb/parallel_sort.h>
+#include <assert.h>
 
 #include "body.h"
 #include "util.h"
@@ -21,16 +22,53 @@ struct comparator_t {
     }
 };
 
+point_t& point_t::operator=(const point_t& rhs) {
+  if (this == &rhs)
+    return *this;
+
+  x = rhs.x;
+  y = rhs.y;
+  weight = rhs.weight;
+
+  return *this;
+}
+
 point_t& point_t::operator+=(const point_t& rhs) {
-  weight += rhs.weight;
-  x += rhs.x * rhs.weight / weight;
-  y += rhs.y * rhs.weight / weight;
+  double newWeight = weight + rhs.weight;
+
+  if (!newWeight) {
+    weight = newWeight;
+    return *this;
+  }
+
+  x = (x * weight + rhs.x * rhs.weight) / newWeight;
+  y = (y * weight + rhs.y * rhs.weight) / newWeight;
+  weight = newWeight;
 
   return *this;
 }
 
 const point_t point_t::operator+(const point_t& rhs) const {
   return point_t(*this) += rhs;
+}
+
+point_t& point_t::operator-=(const point_t& rhs) {
+  double newWeight = weight - rhs.weight;
+
+  if (!newWeight) {
+    weight = newWeight;
+    return *this;
+  }
+
+  x = (x * weight - rhs.x * rhs.weight) / newWeight;
+  y = (y * weight - rhs.y * rhs.weight) / newWeight;
+  weight = newWeight;
+
+  return *this;
+}
+
+const point_t point_t::operator-(const point_t& rhs) const {
+  return point_t(*this) -= rhs;
 }
 
 ostream& operator<<(ostream& os, const point_t& p) {

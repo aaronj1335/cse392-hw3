@@ -234,22 +234,63 @@ int main(int argc, char* argv[]) {
   // ************************************************************
   cerr << "======================================== point_t::operator+=()" << endl;
 
-  point_t p1(0, 0, 1), p2(1, 1, 1);
+  point_t ps[] = {point_t(0, 0, 1), point_t(1, 1, 1), point_t()};
 
-  p1 += p2;
+  ps[0] += ps[1];
 
-  assert(p1.x == 0.5);
-  assert(p1.y == 0.5);
-  assert(p1.weight == 2);
+  assert(ps[0].x == 0.5);
+  assert(ps[0].y == 0.5);
+  assert(ps[0].weight == 2);
+
+  new (&ps[0]) point_t(0.5, 0.5, 0.1);
+  new (&ps[1]) point_t(1, 1, 0.4);
+
+  ps[0] += ps[1];
+
+  assert(ps[0].x == 0.9);
+  assert(ps[0].y == 0.9);
+  assert(ps[0].weight == 0.5);
 
   // ************************************************************
   cerr << "======================================== point_t::operator+()" << endl;
 
-  point_t p3(0, 0, 1), p4(1, 1, 1), p5 = p3 + p4;
+  new (&ps[0]) point_t(0, 0, 1);
+  new (&ps[1]) point_t(1, 1, 1);
+  ps[2] = ps[0] + ps[1];
 
-  assert(p5.x == 0.5);
-  assert(p5.y == 0.5);
-  assert(p5.weight == 2);
+  assert(ps[2].x == 0.5);
+  assert(ps[2].y == 0.5);
+  assert(ps[2].weight == 2);
+
+  // ************************************************************
+  cerr << "======================================== point_t::operator-=()" << endl;
+
+  new (&ps[0]) point_t(0.5, 0.5, 2);
+  new (&ps[1]) point_t(1, 1, 1);
+
+  ps[0] -= ps[1];
+
+  assert(ps[0].x == 0);
+  assert(ps[0].y == 0);
+  assert(ps[0].weight == 1);
+
+  new (&ps[0]) point_t(0.9, 0.9, 0.5);
+  new (&ps[1]) point_t(1, 1, 0.4);
+
+  ps[0] -= ps[1];
+
+  assert(ps[0].x == 0.5);
+  assert(ps[0].y == 0.5);
+  assert(ps[0].weight - 0.1 < 0.00001);
+
+  // ************************************************************
+  /* cerr << "======================================== point_t::operator-()" << endl; */
+
+  /* point_t p3(0, 0, 1), p4(1, 1, 1), p5 = p3 + p4; */
+
+  /* assert(p5.x == 0.5); */
+  /* assert(p5.y == 0.5); */
+  /* assert(p5.weight == 2); */
 
   // ************************************************************
   cerr << "======================================== toMid()" << endl;
@@ -428,10 +469,12 @@ int main(int argc, char* argv[]) {
     tree6.insert(idxs[i]);
   vector<midlvl_t> treeMids;
   vector<double> weights;
+  vector<point_t> treePoints;
   for (QTree::iterator it = tree6.begin(); it != tree6.end(); it++) {
     treeMids.push_back(it->toMid(true));
     point_t const* point = it->point();
     weights.push_back(point? point->weight : 0);
+    treePoints.push_back(point? point_t(*point) : point_t(0, 0, 0));
   }
 
   assert(subtreeSize(&treeMids[0], treeMids.size(), 0) == 29);
@@ -475,7 +518,7 @@ int main(int argc, char* argv[]) {
   for (size_t i = 1; i < n; i++)
     expected[i] = expected[i - 1] + input[i];
 
-  parallelPrefixSum(input, n);
+  parallelPrefixSum(input, n, (double) 0);
   isEqual(input, expected, n);
 
   // ************************************************************
@@ -486,8 +529,30 @@ int main(int argc, char* argv[]) {
     0.1, 0.4, 0.1, 0.1, 0.2, 0.2, 0.2, 0.1, 0.1, 0.2, 0.1, 0.1, 0.5, 0.3, 0.2,
     0.2, 0.1, 0.1, 0.1, 0.1, 0.1};
 
-  treePrefixSum(&weights[0], inIdxs, outIdxs, weights.size(), weightsPrefixSum);
+  treePrefixSum(&weights[0], inIdxs, outIdxs, weights.size(), (double) 0,
+      weightsPrefixSum);
   isEqual(weightsPrefixSum, expectedPrefixSum, weights.size());
+
+  point_t* pointPrefixSum = new point_t[treePoints.size()];
+  // literally just copied this from the output didn't even check if it was
+  // correct whatever
+  double expectedTreePointPrefixSum[] = {0.515362, 0.446264, 1.6, 0.289666,
+    0.223596, 0.5, 0.165947, 0.0754961, 0.2, 0.0899074, 0.0728559, 0.1,
+    0.241987, 0.0781364, 0.1, 0.372146, 0.322329, 0.3, 0.313279, 0.280643, 0.2,
+    0.307982, 0.259371, 0.1, 0.318576, 0.301914, 0.1, 0.48988, 0.405702, 0.1,
+    0.680444, 0.219516, 0.4, 0.584999, 0.0834366, 0.1, 0.943668, 0.227026, 0.1,
+    0.596554, 0.283802, 0.2, 0.596554, 0.283802, 0.2, 0.596554, 0.283802, 0.2,
+    0.582333, 0.269646, 0.1, 0.610775, 0.297957, 0.1, 0.257743, 0.885481, 0.2,
+    0.238763, 0.881891, 0.1, 0.276723, 0.889071, 0.1, 0.712041, 0.674644, 0.5,
+    0.618613, 0.698201, 0.3, 0.615113, 0.709731, 0.2, 0.615113, 0.709731, 0.2,
+    0.62133, 0.687648, 0.1, 0.608897, 0.731815, 0.1, 0.625613, 0.675141, 0.1,
+    0.943446, 0.501017, 0.1, 0.76092, 0.777598, 0.1};
+
+  treePrefixSum(&(treePoints[0]), inIdxs, outIdxs, treePoints.size(),
+      point_t(0, 0, 0), pointPrefixSum);
+
+  isEqual((double*) pointPrefixSum, expectedTreePointPrefixSum,
+      treePoints.size() * 3);
 
   return 0;
 }
