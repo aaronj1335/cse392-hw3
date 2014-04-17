@@ -40,12 +40,11 @@ midlvl_t toMid(point_t p, lvl_t level);
 
 // sort a list of points by their morton id
 //
-// input: arrays of points and morton id's such that points[i] <=> mids[i]
+// input: arrays of morton id's
 // output: the sorted list of length `n` in the form of a list of indices, such
-// that idxs[0] is the index of points/mids that comes first in the sorted list
-// of morton ids
-void sortByMid(point_t const* const points, midlvl_t const* const mids,
-    const size_t n, size_t* idxs);
+// that idxs[0] is the index of mids that comes first in the sorted list of
+// morton ids
+void sortByMid(midlvl_t const* const mids, const size_t n, size_t* idxs);
 
 // partition sorted points into a contiguous array
 //

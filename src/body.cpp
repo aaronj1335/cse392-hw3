@@ -102,9 +102,7 @@ midlvl_t toMid(point_t p, lvl_t level) {
   return midlvl(m, level);
 }
 
-void sortByMid(point_t const* const points, midlvl_t const* const mids,
-    const size_t n, size_t* idxs) {
-
+void sortByMid(midlvl_t const* const mids, const size_t n, size_t* idxs) {
   #pragma omp parallel for
     for (size_t i = 0; i < n; i++)
       idxs[i] = i;

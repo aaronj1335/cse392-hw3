@@ -53,8 +53,6 @@ class PrefixSum {
     }
 };
 
-/* template<typename T> */
-/* void parallelPrefixSum(T* data, const size_t l); */
 template<typename T>
 void parallelPrefixSum(T* data, const size_t l, const T id) {
 
@@ -66,9 +64,6 @@ void parallelPrefixSum(T* data, const size_t l, const T id) {
   return;
 }
 
-/* template<typename T> */
-/* void treePrefixSum(T const* const weights, size_t const* const inIdxs, */
-/*     size_t const* const outIdxs, const size_t l, T* result); */
 template<typename T>
 void treePrefixSum(T const* const weights, size_t const* const inIdxs,
     size_t const* const outIdxs, const size_t l, const T id, T* result) {
@@ -91,5 +86,8 @@ void treePrefixSum(T const* const weights, size_t const* const inIdxs,
 
   delete [] s;
 }
+
+void evaluate(midlvl_t const* const mids, point_t const* const points,
+    const size_t l, point_t& p);
 
 #endif

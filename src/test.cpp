@@ -288,13 +288,16 @@ int main(int argc, char* argv[]) {
   assert(isClose(ps[0].weight, 0.1));
 
   // ************************************************************
-  /* cerr << "======================================== point_t::operator-()" << endl; */
+  cerr << "======================================== point_t::operator-()" << endl;
 
-  /* point_t p3(0, 0, 1), p4(1, 1, 1), p5 = p3 + p4; */
+  new (&ps[0]) point_t(0.5, 0.5, 2);
+  new (&ps[1]) point_t(1, 1, 1);
 
-  /* assert(p5.x == 0.5); */
-  /* assert(p5.y == 0.5); */
-  /* assert(p5.weight == 2); */
+  ps[2] = ps[0] - ps[1];
+
+  assert(ps[2].x == 0);
+  assert(ps[2].y == 0);
+  assert(ps[2].weight == 1);
 
   // ************************************************************
   cerr << "======================================== toMid()" << endl;
@@ -318,7 +321,7 @@ int main(int argc, char* argv[]) {
     }
 
   assert(!sorted(mids, l));
-  sortByMid(points, mids, l, idxs);
+  sortByMid(mids, l, idxs);
   assert(sorted(mids, l, idxs));
 
   // ************************************************************
@@ -334,7 +337,7 @@ int main(int argc, char* argv[]) {
     points[i].y = ((float) rand()) / ((float) RAND_MAX);
     mids[i] = toMid(points[i], 1);
   }
-  sortByMid(points, mids, l, idxs);
+  sortByMid(mids, l, idxs);
 
   QTree tree(points);
   tree.insert(idxs, l);
@@ -354,7 +357,7 @@ int main(int argc, char* argv[]) {
     points[i].y = ((float) rand()) / ((float) RAND_MAX);
     mids[i] = toMid(points[i], 1);
   }
-  sortByMid(points, mids, l, idxs);
+  sortByMid(mids, l, idxs);
 
   QTree tree4(points);
   midlvl_t prev = 0;
@@ -375,7 +378,7 @@ int main(int argc, char* argv[]) {
     points[i].y = ((float) rand()) / ((float) RAND_MAX);
     mids[i] = toMid(points[i], 1);
   }
-  sortByMid(points, mids, l, idxs);
+  sortByMid(mids, l, idxs);
 
   QTree tree5(points);
   for (size_t i = 0; i < l; i++)
@@ -466,7 +469,7 @@ int main(int argc, char* argv[]) {
   for (size_t i = 0; i < l; i++) {
     mids[i] = toMid(points[i], 1);
   }
-  sortByMid(points, mids, l, idxs);
+  sortByMid(mids, l, idxs);
 
   QTree tree6(points);
   for (size_t i = 0; i < l; i++)

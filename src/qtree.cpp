@@ -100,6 +100,14 @@ point_t const* QTree::point() const {
   return isLeaf && !isEmpty? &points[idx] : NULL;
 }
 
+bool QTree::isLeafNode() const {
+  return isLeaf;
+}
+
+bool QTree::isWellSeparatedFrom(const point_t& p) const {
+  return false;
+}
+
 QTree::iterator::iterator(QTree* ptr) : ptr(ptr), start(ptr) { }
 
 QTree::iterator QTree::iterator::operator++() {

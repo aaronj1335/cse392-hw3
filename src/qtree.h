@@ -21,6 +21,10 @@ class QTree {
 
     point_t const* point() const;
 
+    bool isLeafNode() const;
+
+    bool isWellSeparatedFrom(const point_t& p) const;
+
     // inorder, depth-first iterator, to be speicific
     class iterator {
       public:

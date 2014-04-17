@@ -72,12 +72,25 @@ $(BIN_DIR):
 test: all
 	@export OMP_NUM_THREADS=2 && ./$(TEST_TARGET)
 	@export OMP_NUM_THREADS=4 && ./$(TEST_TARGET)
+	@./$(Q2_TARGET)
+
+run: all
+	@export OMP_NUM_THREADS=4 && ./$(Q2_TARGET)
+
+run-small: all
+	@export OMP_NUM_THREADS=4 && ./$(Q2_TARGET) -s
+
+
+# meeeeeeeetttttttaaaaaa
+
+tags: $(INPUTS)
+	ctags -R $(SRC_DIR)
 
 # note that when doing this, there's a good chance you'll need to
 # `make clean && DEBUG=1 make debug`, and then `DEBUG=1 make debug` on all
 # subsequent commands
 debug: all
-	@export OMP_NUM_THREADS=2 && lldb ./$(TEST_TARGET)
+	@export OMP_NUM_THREADS=4 && lldb -- ./$(Q2_TARGET) -s
 
 # report
 
