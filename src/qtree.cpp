@@ -94,6 +94,10 @@ lvl_t QTree::lvl() const {
   return level;
 }
 
+point_t const* QTree::point() const {
+  return isLeaf && !isEmpty? &points[idx] : NULL;
+}
+
 QTree::iterator::iterator(QTree* ptr) : ptr(ptr), start(ptr) { }
 
 QTree::iterator QTree::iterator::operator++() {

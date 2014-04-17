@@ -19,6 +19,8 @@ class QTree {
 
     lvl_t lvl() const;
 
+    point_t const* point() const;
+
     // inorder, depth-first iterator, to be speicific
     class iterator {
       public:
