@@ -26,7 +26,8 @@ uint64_t fixture2[] = {0ull, 1ull, 2ull, 1152921504606846978ull,
   8070450532247928834ull, 13835058055282163713ull, 16140901064495857666ull,
   17293822569102704642ull};
 
-bool isEqual(int* a, int* b, size_t l) {
+template<typename T>
+bool isEqual(T* a, T* b, size_t l) {
   bool eql = true;
 
   for (size_t i = 0; i < l; i++)
@@ -435,6 +436,23 @@ int main(int argc, char* argv[]) {
     assert(inIdxs[i] == expectedInIdxs[i]);
     assert(outIdxs[i] == expectedOutIdxs[i]);
   }
+
+  // ************************************************************
+  cerr << "======================================== parallelPrefixSum" << endl;
+
+  size_t n = (1 << 13) + 7;
+  double* input = new double[n];
+  double* expected = new double[n];
+
+  for (size_t i = 0; i < n; i++)
+    input[i] = ((double) rand()) / ((double) RAND_MAX);
+
+  expected[0] = input[0];
+  for (size_t i = 1; i < n; i++)
+    expected[i] = expected[i - 1] + input[i];
+
+  parallelPrefixSum(input, n);
+  isEqual(input, expected, n);
 
   return 0;
 }
