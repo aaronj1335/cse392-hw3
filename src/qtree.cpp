@@ -87,7 +87,7 @@ midlvl_t QTree::toMid(const bool useAnchor) const {
   assert(!(isLeaf && isEmpty));
   return isLeaf && !useAnchor?
     ::toMid(points[idx], level) :
-    ::toMid(point_t(coord[0], coord[1]), level);
+    ::toMid(point_t(coord[0], coord[1], 0.0), level);
 }
 
 lvl_t QTree::lvl() const {

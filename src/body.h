@@ -15,8 +15,9 @@
 struct point_t {
   double x;
   double y;
+  double weight;
   point_t() {}
-  point_t(double x, double y) : x(x), y(y) {}
+  point_t(double x, double y, double weight) : x(x), y(y), weight(weight) {}
 };
 
 midlvl_t toMid(point_t p, lvl_t level);
