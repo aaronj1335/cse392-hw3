@@ -8,4 +8,7 @@ void eulerTour(midlvl_t const* const mids, const size_t l, size_t *const inIdxs,
 
 void parallelPrefixSum(double* data, const size_t l);
 
+void treePrefixSum(double const* const weights, size_t const* const inIdxs,
+    size_t const* const outIdxs, const size_t l, double* result);
+
 #endif

@@ -406,33 +406,37 @@ int main(int argc, char* argv[]) {
   QTree tree6(points);
   for (size_t i = 0; i < l; i++)
     tree6.insert(idxs[i]);
-  vector<midlvl_t> fullTree;
-  for (QTree::iterator it = tree6.begin(); it != tree6.end(); it++)
-    fullTree.push_back(it->toMid(true));
+  vector<midlvl_t> treeMids;
+  vector<double> weights;
+  for (QTree::iterator it = tree6.begin(); it != tree6.end(); it++) {
+    treeMids.push_back(it->toMid(true));
+    point_t const* point = it->point();
+    weights.push_back(point? point->weight : 0);
+  }
 
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 0) == 29);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 1) == 8);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 2) == 2);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 3) == 0);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 5) == 4);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 6) == 2);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 11) == 0);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 12) == 0);
-  assert(subtreeSize(&fullTree[0], fullTree.size(), 22) == 5);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 0) == 29);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 1) == 8);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 2) == 2);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 3) == 0);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 5) == 4);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 6) == 2);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 11) == 0);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 12) == 0);
+  assert(subtreeSize(&treeMids[0], treeMids.size(), 22) == 5);
 
   // ************************************************************
   cerr << "======================================== eulerTour" << endl;
 
-  size_t* inIdxs = new size_t[fullTree.size()];
-  size_t* outIdxs = new size_t[fullTree.size()];
+  size_t* inIdxs = new size_t[treeMids.size()];
+  size_t* outIdxs = new size_t[treeMids.size()];
   size_t expectedInIdxs[] = {0, 1, 2, 3, 5, 8, 9, 10, 12, 15, 19, 20, 22, 24,
     25, 26, 27, 29, 35, 36, 38, 41, 42, 43, 44, 45, 47, 51, 54, 56};
   size_t expectedOutIdxs[] = {59, 18, 7, 4, 6, 17, 14, 11, 13, 16, 34, 21, 23,
     33, 32, 31, 28, 30, 40, 37, 39, 58, 53, 50, 49, 46, 48, 52, 55, 57};
 
-  eulerTour(&(fullTree[0]), fullTree.size(), inIdxs, outIdxs);
+  eulerTour(&(treeMids[0]), treeMids.size(), inIdxs, outIdxs);
 
-  for (size_t i = 0; i < fullTree.size(); i++) {
+  for (size_t i = 0; i < treeMids.size(); i++) {
     assert(inIdxs[i] == expectedInIdxs[i]);
     assert(outIdxs[i] == expectedOutIdxs[i]);
   }
@@ -453,6 +457,17 @@ int main(int argc, char* argv[]) {
 
   parallelPrefixSum(input, n);
   isEqual(input, expected, n);
+
+  // ************************************************************
+  cerr << "======================================== treePrefixSum" << endl;
+
+  double* weightsPrefixSum = new double[weights.size()];
+  double expectedPrefixSum[] = {1.6, 0.5, 0.2, 0.1, 0.1, 0.3, 0.2, 0.1, 0.1,
+    0.1, 0.4, 0.1, 0.1, 0.2, 0.2, 0.2, 0.1, 0.1, 0.2, 0.1, 0.1, 0.5, 0.3, 0.2,
+    0.2, 0.1, 0.1, 0.1, 0.1, 0.1};
+
+  treePrefixSum(&weights[0], inIdxs, outIdxs, weights.size(), weightsPrefixSum);
+  isEqual(weightsPrefixSum, expectedPrefixSum, weights.size());
 
   return 0;
 }

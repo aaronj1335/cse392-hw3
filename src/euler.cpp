@@ -67,4 +67,25 @@ void parallelPrefixSum(double* data, const size_t l) {
   return;
 }
 
+void treePrefixSum(double const* const weights, size_t const* const inIdxs,
+    size_t const* const outIdxs, const size_t l, double* result) {
+
+  double* s = new double[2 * l];
+
+  #pragma omp parallel for
+    for (size_t i = 0; i < l * 2; i++)
+      s[i] = 0;
+
+  #pragma omp parallel for
+    for (size_t i = 0; i < l; i++)
+      s[inIdxs[i]] = weights[i];
+
+  parallelPrefixSum(s, l * 2);
+
+  #pragma omp parallel for
+    for (size_t i = 0; i < l; i++)
+      result[i] = s[outIdxs[i]] - s[inIdxs[i]] + weights[i];
+
+  delete [] s;
+}
 
