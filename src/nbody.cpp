@@ -110,7 +110,8 @@ void nbody(point_t const* const points, const size_t l, float* u) {
       cout.width(3);
       cout << i << ": ";
       cout.width(20);
-      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]] << endl;
+      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]]
+        << endl;
     }
 
     cout << endl;
@@ -125,7 +126,8 @@ void nbody(point_t const* const points, const size_t l, float* u) {
       cout.width(3);
       cout << i << ": ";
       cout.width(20);
-      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]] << endl;
+      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]]
+        << endl;
     }
 
     cout << endl;
@@ -133,11 +135,13 @@ void nbody(point_t const* const points, const size_t l, float* u) {
 
   delete[] mids;
   delete[] idxs;
-  for (size_t i = 0; i < p; i++)
-    delete trees[i];
   delete[] trees;
   delete[] treeSizes;
   delete[] treeMids;
+  for (size_t i = 0; i < tl; i++)
+    delete treeNodes[i];
+  delete[] treeNodes;
+  delete[] treeIdxs;
 }
 
 int main(int argc, char* argv[]) {
