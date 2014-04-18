@@ -118,6 +118,7 @@ void nbody(point_t const* const points, const size_t l, float* u) {
   }
 
   sortByMid(treeMids, tl, treeIdxs);
+  // TODO: remove dupes
 
   if (smallTest) {
     cout << "==================== full tree after sorting" << endl;
