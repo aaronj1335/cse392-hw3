@@ -71,7 +71,11 @@ void nbody(point_t const* const points, const size_t l, float* u) {
   for (size_t i = 0; i < p; i++)
     tl += treeSizes[i];
 
+  // we could get rid of the treeMids allocation if we have a function like
+  // sortByMid but for QTree pointers
   midlvl_t* treeMids = new midlvl_t[tl];
+  QTree** treeNodes = new QTree*[tl];
+  size_t* treeIdxs = new size_t[tl];
 
   #pragma omp parallel
   {
@@ -83,8 +87,15 @@ void nbody(point_t const* const points, const size_t l, float* u) {
 
     size_t offset = 0;
 
-    for (QTree::iterator i = trees[tid]->begin(); i != trees[tid]->end(); i++)
-      treeMids[myStart + ++offset] = i->toMid();
+    for (QTree::iterator it = trees[tid]->begin(); it != trees[tid]->end();
+        it++) {
+      size_t i = myStart + offset++;
+
+      treeMids[i] = it->toMid();
+      // get a pointer to the actual QTree instance, not the iterator
+      treeNodes[i] = &(*it);
+      treeIdxs[i] = i;
+    }
   }
 
   if (smallTest) {
@@ -92,6 +103,32 @@ void nbody(point_t const* const points, const size_t l, float* u) {
       cout << "==================== thread " << i << " tree" << endl;
       _print_hierarchy(*trees[i]);
     }
+
+    cout << endl << "==================== full tree before sorting" << endl;
+
+    for (size_t i = 0; i < tl; i++) {
+      cout.width(3);
+      cout << i << ": ";
+      cout.width(20);
+      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]] << endl;
+    }
+
+    cout << endl;
+  }
+
+  sortByMid(treeMids, tl, treeIdxs);
+
+  if (smallTest) {
+    cout << "==================== full tree after sorting" << endl;
+
+    for (size_t i = 0; i < tl; i++) {
+      cout.width(3);
+      cout << i << ": ";
+      cout.width(20);
+      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]] << endl;
+    }
+
+    cout << endl;
   }
 
   delete[] mids;
