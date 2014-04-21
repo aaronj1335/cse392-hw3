@@ -5,12 +5,14 @@
 #include <assert.h>
 
 #include <omp.h>
+#include <tbb/parallel_sort.h>
 
 #include "qtree.h"
 #include "euler.h"
 #include "util.h"
 
 using namespace std;
+using namespace tbb;
 
 bool smallTest = false;
 
@@ -92,7 +94,7 @@ void nbody(point_t const* const points, const size_t l, float* u) {
         it++) {
       size_t i = myStart + offset++;
 
-      treeMids[i] = it->toMid();
+      treeMids[i] = it->toMid(true);
       // get a pointer to the actual QTree instance, not the iterator
       treeNodes[i] = &(*it);
       treeIdxs[i] = i;
@@ -111,14 +113,19 @@ void nbody(point_t const* const points, const size_t l, float* u) {
       cout.width(3);
       cout << i << ": ";
       cout.width(20);
-      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]]
-        << endl;
+      cout << treeNodes[treeIdxs[i]]->toMid(true) << " "
+        << *treeNodes[treeIdxs[i]] << endl;
     }
 
     cout << endl;
   }
 
   sortByMid(treeMids, tl, treeIdxs);
+
+  midlvl_t* sortedTreeMids = new midlvl_t[tl];
+  #pragma omp parallel for
+    for (size_t i = 0; i < tl; i++)
+      sortedTreeMids[i] = treeMids[treeIdxs[i]];
 
   if (smallTest) {
     cout << "==================== full tree after sorting" << endl;
@@ -127,21 +134,30 @@ void nbody(point_t const* const points, const size_t l, float* u) {
       cout.width(3);
       cout << i << ": ";
       cout.width(20);
-      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]]
+      cout << treeNodes[treeIdxs[i]]->toMid(true) << " " << *treeNodes[treeIdxs[i]]
         << endl;
     }
 
     cout << endl;
   }
 
+  point_t* treePoints = new point_t[tl];
+
+  #pragma omp parallel for
+    for (size_t i = 0; i < tl; i++)
+      treePoints[i] = treeNodes[i]->isLeafNode()?
+        point_t(*treeNodes[i]->point()) :
+        point_t(0, 0, 0);
+
   // TODO: remove dupes, reset `tl` to new tree size. just do it sequentially
   // for now
   size_t deduped = 1;
   for (size_t i = 1; i < tl; i++, deduped++)
-    if (treeMids[treeIdxs[i]] == treeMids[treeIdxs[i - 1]])
+    if (sortedTreeMids[i] == sortedTreeMids[i - 1])
       deduped--;
     else
-      treeIdxs[deduped] = treeIdxs[i];
+      treeIdxs[deduped] = treeIdxs[i],
+        sortedTreeMids[deduped] = sortedTreeMids[i];
   tl = deduped;
 
   if (smallTest) {
@@ -153,6 +169,7 @@ void nbody(point_t const* const points, const size_t l, float* u) {
       cout.width(20);
       cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]]
         << endl;
+      assert(treeNodes[treeIdxs[i]]->toMid(true) == sortedTreeMids[i]);
     }
 
     cout << endl;
@@ -161,23 +178,16 @@ void nbody(point_t const* const points, const size_t l, float* u) {
   size_t* inIdxs = new size_t[tl];
   size_t* outIdxs = new size_t[tl];
 
-  eulerTour(treeMids, tl, inIdxs, outIdxs);
-
-  point_t* treePoints = new point_t[tl];
-
-  #pragma omp parallel for
-    for (size_t i = 0; i < tl; i++)
-      treePoints[i] = treeNodes[i]->isLeafNode()?
-        point_t(*treeNodes[i]->point()) :
-        point_t(0, 0, 0);
+  eulerTour(sortedTreeMids, tl, inIdxs, outIdxs);
 
   point_t* treeResult = new point_t[tl];
 
   treePrefixSum(treePoints, inIdxs, outIdxs, tl, point_t(0, 0, 0), treeResult);
 
-  /* #pragma omp parallel for */
-  /*   for (size_t i = 0; i < l; i++) */
-  /*     u[i] = potential(treeMids, treeNodes, (point_t* const*) treePoints, tl, i, points[i]); */
+  #pragma omp parallel for
+    for (size_t i = 0; i < l; i++)
+      u[i] = potential(sortedTreeMids, treeNodes, treeResult, treeIdxs, tl, i,
+          points[i]);
 
 
   delete[] mids;

@@ -88,7 +88,7 @@ void treePrefixSum(T const* const weights, size_t const* const inIdxs,
 }
 
 float potential(midlvl_t const* const mids, QTree const* const* const nodes,
-    point_t* const* const points, const size_t l, const size_t idx,
-    const point_t& p);
+    point_t const* const points, size_t const* const idxs, const size_t l,
+    const size_t idx, const point_t& p);
 
 #endif
