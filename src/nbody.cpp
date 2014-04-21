@@ -119,10 +119,33 @@ void nbody(point_t const* const points, const size_t l, float* u) {
   }
 
   sortByMid(treeMids, tl, treeIdxs);
-  // TODO: remove dupes, reset `tl` to new tree size
 
   if (smallTest) {
     cout << "==================== full tree after sorting" << endl;
+
+    for (size_t i = 0; i < tl; i++) {
+      cout.width(3);
+      cout << i << ": ";
+      cout.width(20);
+      cout << treeNodes[treeIdxs[i]]->toMid() << " " << *treeNodes[treeIdxs[i]]
+        << endl;
+    }
+
+    cout << endl;
+  }
+
+  // TODO: remove dupes, reset `tl` to new tree size. just do it sequentially
+  // for now
+  size_t deduped = 1;
+  for (size_t i = 1; i < tl; i++, deduped++)
+    if (treeMids[treeIdxs[i]] == treeMids[treeIdxs[i - 1]])
+      deduped--;
+    else
+      treeIdxs[deduped] = treeIdxs[i];
+  tl = deduped;
+
+  if (smallTest) {
+    cout << "==================== full tree after deduping" << endl;
 
     for (size_t i = 0; i < tl; i++) {
       cout.width(3);
