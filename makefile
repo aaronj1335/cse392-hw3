@@ -21,6 +21,7 @@ SRC_DIR = src
 OBJ_DIR = obj
 SCRATCH ?= .
 VAR_DIR = $(SCRATCH)/var
+RESULTS_DIR = results
 
 INPUTS = $(wildcard $(SRC_DIR)/*.cpp)
 INPUTS_TMP = $(subst $(SRC_DIR),$(OBJ_DIR),$(INPUTS))
@@ -79,6 +80,12 @@ run: all
 
 run-small: all
 	@export OMP_NUM_THREADS=4 && ./$(Q2_TARGET) -s
+
+$(RESULTS_DIR):
+	mkdir $@
+
+perf: all | $(RESULTS_DIR)
+	@export RESULTS_DIR=$(RESULTS_DIR) && bin/bench.sh
 
 
 # meeeeeeeetttttttaaaaaa

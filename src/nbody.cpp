@@ -250,7 +250,23 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  struct timeval wallClockStart, wallClockFinish;
+  double wallClockElapsed;
+  gettimeofday(&wallClockStart, NULL);
+
   nbody(points, l, u);
+
+  gettimeofday(&wallClockFinish, NULL);
+  wallClockElapsed =
+    ((wallClockFinish.tv_sec  - wallClockStart.tv_sec) * 1000000u +
+     wallClockFinish.tv_usec - wallClockStart.tv_usec) / 1.e6;
+
+  // check if fd #3 is open, if so, write the processor time taken in seconds
+  lseek(3, 0, SEEK_CUR);
+  if (errno != EBADF && errno != ESPIPE) {
+    FILE* timeOut = fdopen(3, "w");
+    fprintf(timeOut, "wall_clock_sec: %f\n", wallClockElapsed);
+  }
 
   cout << "generating problem of size " << l << endl;
 
