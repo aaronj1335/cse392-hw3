@@ -17,6 +17,18 @@ ifeq ($(DEBUG), 1)
 	FLAGS += -g
 endif
 
+# on TACC the only thing i've figured out is to download the intel tbb archive
+# from here:
+#
+# 	https://threadingbuildingblocks.org/sites/default/files/software_releases/linux/tbb42_20140122oss_lin.tgz
+#
+# and then unzip it into ~/download/, then the makefile will link it from the
+# shared library there using the conditional below
+ifneq ($(wildcard $(HOME)/download/tbb42_20140122oss),)
+	LIBRARIES := -I$(HOME)/download/tbb42_20140122oss/include -L$(HOME)/download/tbb42_20140122oss/lib/intel64/gcc4.4 $(LIBRARIES)
+	LD_LIBRARY_PATH:=$(LD_LIBRARY_PATH):/home1/01649/astacy/download/tbb42_20140122oss/lib/intel64/gcc4.4
+endif
+
 SRC_DIR = src
 OBJ_DIR = obj
 SCRATCH ?= .

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "QTree.h"
+#include "qtree.h"
 
 void _print_bin(uint64_t n);
 
