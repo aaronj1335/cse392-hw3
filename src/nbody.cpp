@@ -36,8 +36,9 @@ void nbody(point_t const* const points, const size_t l, float* u) {
   midlvl_t* mids = new midlvl_t[l];
   size_t* idxs = new size_t[l];
 
-  for (size_t i = 0; i < l; i++)
-    mids[i] = toMid(points[i], 1);
+  #pragma omp parallel for
+    for (size_t i = 0; i < l; i++)
+      mids[i] = toMid(points[i], 1);
 
   sortByMid(mids, l, idxs);
 
