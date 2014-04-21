@@ -27,12 +27,12 @@ float radius(const point_t& p1, const point_t& p2) {
 }
 
 float potential(midlvl_t const* const mids, QTree const* const* const nodes,
-    const size_t l, const size_t idx, point_t& p) {
+    point_t* const* const points, const size_t l, const size_t idx,
+    const point_t& p) {
   float g = 0;
 
   if (nodes[idx]->isLeafNode() || nodes[idx]->isWellSeparatedFrom(p)) {
-    point_t const* const nodePoint = nodes[idx]->point();
-    assert(nodePoint);
+    point_t const* const nodePoint = points[idx];
     float r = radius(*nodePoint, p);
     g = -1 / 2 / 3.14159265358979f * log(r);
   } else {
@@ -42,7 +42,7 @@ float potential(midlvl_t const* const mids, QTree const* const* const nodes,
 
     for (size_t i = 0; i < NUM_KIDS; i++)
       if (kids[i] >= 0)
-        g += potential(mids, nodes, l, kids[i], p);
+        g += potential(mids, nodes, points, l, kids[i], p);
   }
 
   return g;

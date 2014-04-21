@@ -7,6 +7,7 @@
 #include <omp.h>
 
 #include "qtree.h"
+#include "euler.h"
 #include "util.h"
 
 using namespace std;
@@ -118,7 +119,7 @@ void nbody(point_t const* const points, const size_t l, float* u) {
   }
 
   sortByMid(treeMids, tl, treeIdxs);
-  // TODO: remove dupes
+  // TODO: remove dupes, reset `tl` to new tree size
 
   if (smallTest) {
     cout << "==================== full tree after sorting" << endl;
@@ -134,6 +135,28 @@ void nbody(point_t const* const points, const size_t l, float* u) {
     cout << endl;
   }
 
+  size_t* inIdxs = new size_t[tl];
+  size_t* outIdxs = new size_t[tl];
+
+  eulerTour(treeMids, tl, inIdxs, outIdxs);
+
+  point_t* treePoints = new point_t[tl];
+
+  #pragma omp parallel for
+    for (size_t i = 0; i < tl; i++)
+      treePoints[i] = treeNodes[i]->isLeafNode()?
+        point_t(*treeNodes[i]->point()) :
+        point_t(0, 0, 0);
+
+  point_t* treeResult = new point_t[tl];
+
+  treePrefixSum(treePoints, inIdxs, outIdxs, tl, point_t(0, 0, 0), treeResult);
+
+  /* #pragma omp parallel for */
+  /*   for (size_t i = 0; i < l; i++) */
+  /*     u[i] = potential(treeMids, treeNodes, (point_t* const*) treePoints, tl, i, points[i]); */
+
+
   delete[] mids;
   delete[] idxs;
   delete[] trees;
@@ -143,6 +166,9 @@ void nbody(point_t const* const points, const size_t l, float* u) {
     delete treeNodes[i];
   delete[] treeNodes;
   delete[] treeIdxs;
+  delete[] inIdxs;
+  delete[] outIdxs;
+  delete[] treePoints;
 }
 
 int main(int argc, char* argv[]) {

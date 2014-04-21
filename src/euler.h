@@ -84,10 +84,11 @@ void treePrefixSum(T const* const weights, size_t const* const inIdxs,
     for (size_t i = 0; i < l; i++)
       result[i] = s[outIdxs[i]] - s[inIdxs[i]] + weights[i];
 
-  delete [] s;
+  delete[] s;
 }
 
-void evaluate(midlvl_t const* const mids, point_t const* const points,
-    const size_t l, point_t& p);
+float potential(midlvl_t const* const mids, QTree const* const* const nodes,
+    point_t* const* const points, const size_t l, const size_t idx,
+    const point_t& p);
 
 #endif
