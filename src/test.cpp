@@ -342,7 +342,8 @@ int main(int argc, char* argv[]) {
   QTree tree(points);
   tree.insert(idxs, l);
 
-  assert(&tree);
+  // i get errors on this b/c the address will never be NULL
+  /* assert(&tree); */
 
   // ************************************************************
   cerr << "======================================== Testing QTree::iterator" << endl;

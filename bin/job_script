@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -V                       # Inherit the submission environment
+#$ -cwd                     # Start job in submission directory
+#$ -N nbodyperf             # Job Name
+#$ -o $JOB_NAME.o$JOB_ID    # Name of the output file
+#$ -pe 1way 12              # Requests 12 tasks/node, 24 cores total
+#$ -q serial                # Queue name normal
+#$ -l h_rt=00:10:00         # Run time (hh:mm:ss) - 1.5 hours
+#$ -M aaron.r.stacy@gmail.com
+#$ -m be                    # Email at Begin and End of job
+make perf

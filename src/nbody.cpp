@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <sys/time.h>
 
 #include <omp.h>
 #include <tbb/parallel_sort.h>
@@ -36,8 +37,9 @@ void nbody(point_t const* const points, const size_t l, float* u) {
   midlvl_t* mids = new midlvl_t[l];
   size_t* idxs = new size_t[l];
 
-  for (size_t i = 0; i < l; i++)
-    mids[i] = toMid(points[i], 1);
+  #pragma omp parallel for
+    for (size_t i = 0; i < l; i++)
+      mids[i] = toMid(points[i], 1);
 
   sortByMid(mids, l, idxs);
 
@@ -250,7 +252,23 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  struct timeval wallClockStart, wallClockFinish;
+  double wallClockElapsed;
+  gettimeofday(&wallClockStart, NULL);
+
   nbody(points, l, u);
+
+  gettimeofday(&wallClockFinish, NULL);
+  wallClockElapsed =
+    ((wallClockFinish.tv_sec  - wallClockStart.tv_sec) * 1000000u +
+     wallClockFinish.tv_usec - wallClockStart.tv_usec) / 1.e6;
+
+  // check if fd #3 is open, if so, write the processor time taken in seconds
+  lseek(3, 0, SEEK_CUR);
+  if (errno != EBADF && errno != ESPIPE) {
+    FILE* timeOut = fdopen(3, "w");
+    fprintf(timeOut, "wall_clock_sec: %f\n", wallClockElapsed);
+  }
 
   cout << "generating problem of size " << l << endl;
 

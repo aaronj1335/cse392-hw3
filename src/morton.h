@@ -2,6 +2,7 @@
 #define __morton__
 
 #include <stdlib.h>
+#include <stdint.h>
 
 // this is used to represent the combined morton id and level info (and doesn't
 // actually provide type safety!)
