@@ -1,6 +1,8 @@
-# CSE 392 Homework 3
+# CSE 392 Spring 2014 Homework 3
 
-1. 
+#### Abhishek Bhaduri and Aaron Stacy
+
+1. See appended hand-written work
 
 2. 2D N-body Simulation
 
@@ -52,7 +54,15 @@
     and [`euler.cpp`][potential]). For doing the Euler tour and prefix scan on
     the tree we used the algorithm from slide 28 of lecture 15.
 
-  2. Weak and strong scalability results:
+  2. Scalability results:
+
+    1. Strong scaling at ~ 1 million points
+
+        ![Strong Scaling](strong-scaling.png)
+
+    2. Weak scaling at a ratio of $2^{18} : 1$
+
+        ![Weak Scaling](weak-scaling.png)
 
   3. We could efficiently estimate error by experimentally measuring the
   average error that center-of-mass approximation introduces, and then using
